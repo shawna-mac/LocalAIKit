@@ -1,36 +1,38 @@
-//
-//  LocalAIKitTests.swift
-//  LocalAIKitTests
-//
-//  Created by Shawna MacNabb on 6/1/26.
-//
-
 import XCTest
 @testable import LocalAIKit
 
 final class LocalAIKitTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    func testDefaultModelsDirectoryUsesApplicationSupportWhenAvailable() {
+        let configuration = LocalAIKitConfiguration(modelsDirectory: nil, fileManager: .default)
+        XCTAssertTrue(configuration.modelsDirectory.path.contains("LocalAIKit/Models"))
     }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    func testDownloadCacheKeySeparatesRepositoryAndRevision() throws {
+        let downloader = HuggingFaceModelDownloader(cacheRoot: FileManager.default.temporaryDirectory)
+        let packageA = HuggingFaceModelPackage(
+            repository: HuggingFaceRepository(identifier: "org/model-a", revision: "main"),
+            assets: [HuggingFaceModelAsset(filename: "model.gguf")]
+        )
+        let packageB = HuggingFaceModelPackage(
+            repository: HuggingFaceRepository(identifier: "org/model-a", revision: "v2"),
+            assets: [HuggingFaceModelAsset(filename: "model.gguf")]
+        )
+
+        XCTAssertNotEqual(
+            downloader.cacheKey(for: packageA),
+            downloader.cacheKey(for: packageB)
+        )
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
+    func testDownloadedModelReturnsMatchingURL() {
+        let package = HuggingFaceModelPackage(
+            repository: HuggingFaceRepository(identifier: "org/model", revision: "main"),
+            assets: [HuggingFaceModelAsset(filename: "model.gguf")]
+        )
+        let url = URL(fileURLWithPath: "/tmp/model.gguf")
+        let model = DownloadedModel(package: package, files: ["model.gguf": url])
 
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+        XCTAssertEqual(model.url(for: "model.gguf"), url)
+        XCTAssertEqual(model.primaryFileURL, url)
     }
-
 }
