@@ -3,11 +3,21 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A0FD94D2FD1E80E00E4013C /* llama.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A0FD94C2FD1E80E00E4013C /* llama.xcframework */; };
+		0A0FD94E2FD1E80E00E4013C /* llama.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0A0FD94C2FD1E80E00E4013C /* llama.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0A0FD9502FD1E80E00E4013C /* Agents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FD9512FD1E80E00E4013C /* Agents.swift */; };
+		0A0FD9522FD1E80E00E4013C /* HuggingFaceModelDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FD9532FD1E80E00E4013C /* HuggingFaceModelDownloader.swift */; };
+		0A0FD9542FD1E80E00E4013C /* Inference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FD9552FD1E80E00E4013C /* Inference.swift */; };
+		0A0FD9562FD1E80E00E4013C /* LlamaBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FD9572FD1E80E00E4013C /* LlamaBridge.swift */; };
+		0A0FD9582FD1E80E00E4013C /* LocalAIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FD9592FD1E80E00E4013C /* LocalAIKit.swift */; };
+		0A0FD95A2FD1E80E00E4013C /* LocalAIKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FD95B2FD1E80E00E4013C /* LocalAIKitTests.swift */; };
 		0AF60B792FCE84D70089AF48 /* LocalAIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */; };
+		1A3B4C5D6E7F8091A2B3C401 /* LocalAIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */; };
+		1A3B4C5D6E7F8091A2B3C411 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3B4C5D6E7F8091A2B3C412 /* main.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -18,31 +28,49 @@
 			remoteGlobalIDString = 0AF60B6C2FCE84D70089AF48;
 			remoteInfo = LocalAIKit;
 		};
+		1A3B4C5D6E7F8091A2B3C402 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF60B642FCE84D70089AF48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0AF60B6C2FCE84D70089AF48;
+			remoteInfo = LocalAIKit;
+		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		0A0FD94F2FD1E80E00E4013C /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				0A0FD94E2FD1E80E00E4013C /* llama.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		0A0FD94C2FD1E80E00E4013C /* llama.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = llama.xcframework; path = "build-apple/llama.xcframework"; sourceTree = "<group>"; };
+		0A0FD9512FD1E80E00E4013C /* Agents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Agents.swift; sourceTree = "<group>"; };
+		0A0FD9532FD1E80E00E4013C /* HuggingFaceModelDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuggingFaceModelDownloader.swift; sourceTree = "<group>"; };
+		0A0FD9552FD1E80E00E4013C /* Inference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Inference.swift; sourceTree = "<group>"; };
+		0A0FD9572FD1E80E00E4013C /* LlamaBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LlamaBridge.swift; sourceTree = "<group>"; };
+		0A0FD9592FD1E80E00E4013C /* LocalAIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKit.swift; sourceTree = "<group>"; };
+		0A0FD95B2FD1E80E00E4013C /* LocalAIKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitTests.swift; sourceTree = "<group>"; };
 		0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LocalAIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AF60B782FCE84D70089AF48 /* LocalAIKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LocalAIKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A3B4C5D6E7F8091A2B3C403 /* LocalAIKitCLI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LocalAIKitCLI; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A3B4C5D6E7F8091A2B3C412 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		0AF60B6F2FCE84D70089AF48 /* LocalAIKit */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = LocalAIKit;
-			sourceTree = "<group>";
-		};
-		0AF60B7C2FCE84D70089AF48 /* LocalAIKitTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = LocalAIKitTests;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		0AF60B6A2FCE84D70089AF48 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A0FD94D2FD1E80E00E4013C /* llama.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,14 +82,32 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1A3B4C5D6E7F8091A2B3C40B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A3B4C5D6E7F8091A2B3C401 /* LocalAIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A0FD9472FD1E7D300E4013C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0A0FD94C2FD1E80E00E4013C /* llama.xcframework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		0AF60B632FCE84D70089AF48 = {
 			isa = PBXGroup;
 			children = (
 				0AF60B6F2FCE84D70089AF48 /* LocalAIKit */,
 				0AF60B7C2FCE84D70089AF48 /* LocalAIKitTests */,
+				1A3B4C5D6E7F8091A2B3C410 /* LocalAIKitCLI */,
+				0A0FD9472FD1E7D300E4013C /* Frameworks */,
 				0AF60B6E2FCE84D70089AF48 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -71,8 +117,37 @@
 			children = (
 				0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */,
 				0AF60B782FCE84D70089AF48 /* LocalAIKitTests.xctest */,
+				1A3B4C5D6E7F8091A2B3C403 /* LocalAIKitCLI */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		0AF60B6F2FCE84D70089AF48 /* LocalAIKit */ = {
+			isa = PBXGroup;
+			children = (
+				0A0FD9512FD1E80E00E4013C /* Agents.swift */,
+				0A0FD9532FD1E80E00E4013C /* HuggingFaceModelDownloader.swift */,
+				0A0FD9552FD1E80E00E4013C /* Inference.swift */,
+				0A0FD9572FD1E80E00E4013C /* LlamaBridge.swift */,
+				0A0FD9592FD1E80E00E4013C /* LocalAIKit.swift */,
+			);
+			path = LocalAIKit;
+			sourceTree = "<group>";
+		};
+		0AF60B7C2FCE84D70089AF48 /* LocalAIKitTests */ = {
+			isa = PBXGroup;
+			children = (
+				0A0FD95B2FD1E80E00E4013C /* LocalAIKitTests.swift */,
+			);
+			path = LocalAIKitTests;
+			sourceTree = "<group>";
+		};
+		1A3B4C5D6E7F8091A2B3C410 /* LocalAIKitCLI */ = {
+			isa = PBXGroup;
+			children = (
+				1A3B4C5D6E7F8091A2B3C412 /* main.swift */,
+			);
+			path = LocalAIKitCLI;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -96,13 +171,11 @@
 				0AF60B692FCE84D70089AF48 /* Sources */,
 				0AF60B6A2FCE84D70089AF48 /* Frameworks */,
 				0AF60B6B2FCE84D70089AF48 /* Resources */,
+				0A0FD94F2FD1E80E00E4013C /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				0AF60B6F2FCE84D70089AF48 /* LocalAIKit */,
 			);
 			name = LocalAIKit;
 			packageProductDependencies = (
@@ -124,15 +197,31 @@
 			dependencies = (
 				0AF60B7B2FCE84D70089AF48 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				0AF60B7C2FCE84D70089AF48 /* LocalAIKitTests */,
-			);
 			name = LocalAIKitTests;
 			packageProductDependencies = (
 			);
 			productName = LocalAIKitTests;
 			productReference = 0AF60B782FCE84D70089AF48 /* LocalAIKitTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		1A3B4C5D6E7F8091A2B3C405 /* LocalAIKitCLI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1A3B4C5D6E7F8091A2B3C407 /* Build configuration list for PBXNativeTarget "LocalAIKitCLI" */;
+			buildPhases = (
+				1A3B4C5D6E7F8091A2B3C40A /* Sources */,
+				1A3B4C5D6E7F8091A2B3C40B /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1A3B4C5D6E7F8091A2B3C406 /* PBXTargetDependency */,
+			);
+			name = LocalAIKitCLI;
+			packageProductDependencies = (
+			);
+			productName = LocalAIKitCLI;
+			productReference = 1A3B4C5D6E7F8091A2B3C403 /* LocalAIKitCLI */;
+			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
@@ -153,6 +242,7 @@
 				};
 			};
 			buildConfigurationList = 0AF60B672FCE84D70089AF48 /* Build configuration list for PBXProject "LocalAIKit" */;
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -161,13 +251,13 @@
 			);
 			mainGroup = 0AF60B632FCE84D70089AF48;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			productRefGroup = 0AF60B6E2FCE84D70089AF48 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				0AF60B6C2FCE84D70089AF48 /* LocalAIKit */,
 				0AF60B772FCE84D70089AF48 /* LocalAIKitTests */,
+				1A3B4C5D6E7F8091A2B3C405 /* LocalAIKitCLI */,
 			);
 		};
 /* End PBXProject section */
@@ -194,6 +284,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A0FD9502FD1E80E00E4013C /* Agents.swift in Sources */,
+				0A0FD9522FD1E80E00E4013C /* HuggingFaceModelDownloader.swift in Sources */,
+				0A0FD9542FD1E80E00E4013C /* Inference.swift in Sources */,
+				0A0FD9562FD1E80E00E4013C /* LlamaBridge.swift in Sources */,
+				0A0FD9582FD1E80E00E4013C /* LocalAIKit.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,6 +296,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A0FD95A2FD1E80E00E4013C /* LocalAIKitTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1A3B4C5D6E7F8091A2B3C40A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A3B4C5D6E7F8091A2B3C411 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -211,6 +315,11 @@
 			isa = PBXTargetDependency;
 			target = 0AF60B6C2FCE84D70089AF48 /* LocalAIKit */;
 			targetProxy = 0AF60B7A2FCE84D70089AF48 /* PBXContainerItemProxy */;
+		};
+		1A3B4C5D6E7F8091A2B3C406 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0AF60B6C2FCE84D70089AF48 /* LocalAIKit */;
+			targetProxy = 1A3B4C5D6E7F8091A2B3C402 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -341,7 +450,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TZ93VW7Y2X;
@@ -371,6 +480,7 @@
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_MODULE = YES;
@@ -386,7 +496,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TZ93VW7Y2X;
@@ -416,6 +526,7 @@
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_MODULE = YES;
@@ -477,6 +588,53 @@
 			};
 			name = Release;
 		};
+		1A3B4C5D6E7F8091A2B3C408 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TZ93VW7Y2X;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACH_O_TYPE = mh_execute;
+				MACOSX_DEPLOYMENT_TARGET = 26.1;
+				MARKETING_VERSION = 1.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = shawna.LocalAIKitCLI;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		1A3B4C5D6E7F8091A2B3C409 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TZ93VW7Y2X;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACH_O_TYPE = mh_execute;
+				MACOSX_DEPLOYMENT_TARGET = 26.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = shawna.LocalAIKitCLI;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -503,6 +661,15 @@
 			buildConfigurations = (
 				0AF60B852FCE84D70089AF48 /* Debug */,
 				0AF60B862FCE84D70089AF48 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1A3B4C5D6E7F8091A2B3C407 /* Build configuration list for PBXNativeTarget "LocalAIKitCLI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A3B4C5D6E7F8091A2B3C408 /* Debug */,
+				1A3B4C5D6E7F8091A2B3C409 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

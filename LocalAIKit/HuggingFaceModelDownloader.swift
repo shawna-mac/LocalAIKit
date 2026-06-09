@@ -8,7 +8,7 @@
 import CryptoKit
 import Foundation
 
-public final class HuggingFaceModelDownloader {
+public final class HuggingFaceModelDownloader: @unchecked Sendable {
     private let cacheRoot: URL
     private let fileManager: FileManager
     private let session: URLSession
