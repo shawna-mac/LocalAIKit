@@ -14,6 +14,7 @@ struct ContentView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     blueprintSection(model)
                     modelSection(model)
+                    downloadsSection(model)
                     structuredSection(model)
                     toolSection(model)
                     chatSection(model)
@@ -51,8 +52,51 @@ struct ContentView: View {
                     }
                     .disabled(!model.canDownloadModel)
 
+                    Button("Queue Download") {
+                        model.queueDownload()
+                    }
+                    .disabled(!model.canQueueDownload)
+
                     Text(model.statusText)
                         .foregroundStyle(.secondary)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    @ViewBuilder
+    private func downloadsSection(_ model: DemoAppModel) -> some View {
+        GroupBox("Queued Downloads") {
+            VStack(alignment: .leading, spacing: 12) {
+                if model.downloads.isEmpty {
+                    Text("No queued downloads yet.")
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(model.downloads) { download in
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack {
+                                Text(download.displayName)
+                                    .font(.headline)
+                                Spacer()
+                                Text("\(download.progressPercentage)%")
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            ProgressView(value: download.fractionCompleted)
+
+                            HStack {
+                                Text(download.statusText)
+                                    .foregroundStyle(.secondary)
+                                Spacer()
+                                if case .finished = download.downloadStatus {
+                                    Text("Complete")
+                                        .foregroundStyle(.green)
+                                }
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)

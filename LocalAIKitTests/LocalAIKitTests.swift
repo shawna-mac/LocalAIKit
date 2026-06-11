@@ -80,13 +80,13 @@ final class LocalAIKitTests: XCTestCase {
 
         await state.load(downloadedModel: downloadedModel)
 
-        let phase = await state.phase
+        let modelStatus = await state.modelStatus
         let statusMessage = await state.statusMessage
         let downloaded = await state.downloadedModel
         let loadedModel = await state.loadedModel
         let isBusy = await state.isBusy
 
-        XCTAssertEqual(phase, .ready)
+        XCTAssertEqual(modelStatus, .ready)
         XCTAssertEqual(statusMessage, "Model ready.")
         XCTAssertNotNil(downloaded)
         XCTAssertEqual(loadedModel?.data(for: "model.gguf"), expectedData)
@@ -318,6 +318,25 @@ final class LocalAIKitTests: XCTestCase {
         XCTAssertTrue(message.contains("Structured output could not be decoded"))
     }
 
+    func testDownloadItemFormatsProgressAndStatus() {
+        let package = HuggingFaceModelPackage(
+            repository: HuggingFaceRepository(identifier: "org/model", revision: "main"),
+            assets: [HuggingFaceModelAsset(filename: "model.gguf")]
+        )
+
+        let item = LocalAIKitModelDownload(
+            id: "download-1",
+            package: package,
+            downloadStatus: .downloading,
+            fractionCompleted: 0.42,
+            currentAssetFilename: "model.gguf"
+        )
+
+        XCTAssertEqual(item.progressPercentage, 42)
+        XCTAssertEqual(item.statusText, "Downloading model.gguf")
+        XCTAssertEqual(item.displayName, "org/model @ main")
+    }
+
     func testAgentBlueprintBuildsChatRequest() {
         let agent = LocalAIKitAgent(blueprint: LocalAIKitAgentBlueprintPreset.generalAssistant.blueprint)
         let request = agent.makeChatRequest(
@@ -465,12 +484,12 @@ final class LocalAIKitTests: XCTestCase {
 
         await state.generate(LocalAIKitInferenceRequest(prompt: "Write a sentence"))
 
-        let phase = await state.phase
+        let modelStatus = await state.modelStatus
         let outputText = await state.outputText
         let statusMessage = await state.statusMessage
         let result = await state.result
 
-        XCTAssertEqual(phase, .ready)
+        XCTAssertEqual(modelStatus, .ready)
         XCTAssertEqual(outputText, "generated text")
         XCTAssertEqual(statusMessage, "Generation complete.")
         XCTAssertEqual(result?.text, "generated text")

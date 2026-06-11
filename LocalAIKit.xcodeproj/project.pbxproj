@@ -15,6 +15,7 @@
 		0A0FD9562FD1E80E00E4013C /* LlamaBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FD9572FD1E80E00E4013C /* LlamaBridge.swift */; };
 		0A0FD9582FD1E80E00E4013C /* LocalAIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FD9592FD1E80E00E4013C /* LocalAIKit.swift */; };
 		0A0FD95A2FD1E80E00E4013C /* LocalAIKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FD95B2FD1E80E00E4013C /* LocalAIKitTests.swift */; };
+		0AE44E572FD7CA0A0032DB82 /* Downloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E562FD7CA0A0032DB82 /* Downloads.swift */; };
 		0AF60B792FCE84D70089AF48 /* LocalAIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */; };
 		1A3B4C5D6E7F8091A2B3C401 /* LocalAIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */; };
 		1A3B4C5D6E7F8091A2B3C411 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3B4C5D6E7F8091A2B3C412 /* main.swift */; };
@@ -59,6 +60,7 @@
 		0A0FD9572FD1E80E00E4013C /* LlamaBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LlamaBridge.swift; sourceTree = "<group>"; };
 		0A0FD9592FD1E80E00E4013C /* LocalAIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKit.swift; sourceTree = "<group>"; };
 		0A0FD95B2FD1E80E00E4013C /* LocalAIKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitTests.swift; sourceTree = "<group>"; };
+		0AE44E562FD7CA0A0032DB82 /* Downloads.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Downloads.swift; sourceTree = "<group>"; };
 		0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LocalAIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AF60B782FCE84D70089AF48 /* LocalAIKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LocalAIKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A3B4C5D6E7F8091A2B3C403 /* LocalAIKitCLI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LocalAIKitCLI; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,6 +127,7 @@
 		0AF60B6F2FCE84D70089AF48 /* LocalAIKit */ = {
 			isa = PBXGroup;
 			children = (
+				0AE44E562FD7CA0A0032DB82 /* Downloads.swift */,
 				0A0FD9512FD1E80E00E4013C /* Agents.swift */,
 				0A0FD9532FD1E80E00E4013C /* HuggingFaceModelDownloader.swift */,
 				0A0FD9552FD1E80E00E4013C /* Inference.swift */,
@@ -285,6 +288,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A0FD9502FD1E80E00E4013C /* Agents.swift in Sources */,
+				0AE44E572FD7CA0A0032DB82 /* Downloads.swift in Sources */,
 				0A0FD9522FD1E80E00E4013C /* HuggingFaceModelDownloader.swift in Sources */,
 				0A0FD9542FD1E80E00E4013C /* Inference.swift in Sources */,
 				0A0FD9562FD1E80E00E4013C /* LlamaBridge.swift in Sources */,

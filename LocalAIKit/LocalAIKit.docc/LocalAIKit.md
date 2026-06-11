@@ -93,7 +93,7 @@ let agent = Agent(title: "Time Agent")
 - ``HuggingFaceModelPackage``
 - ``DownloadedModel``
 - ``LoadedModelContents``
-- ``LocalAIKitLoadPhase``
+- ``LocalAIKitModelStatus``
 - ``LocalAIKitLoadState``
 - ``LocalAIKitInferenceRequest``
 - ``LocalAIKitInferenceResult``

@@ -25,7 +25,7 @@ public struct LocalAIKitConfiguration: Sendable {
     }
 }
 
-public struct HuggingFaceRepository: Sendable, Hashable {
+public struct HuggingFaceRepository: Sendable, Hashable, Codable {
     public var identifier: String
     public var revision: String
     public var accessToken: String?
@@ -37,7 +37,7 @@ public struct HuggingFaceRepository: Sendable, Hashable {
     }
 }
 
-public struct HuggingFaceModelAsset: Sendable, Hashable {
+public struct HuggingFaceModelAsset: Sendable, Hashable, Codable {
     public var filename: String
     public var destinationFilename: String?
     public var expectedSHA256: String?
@@ -53,7 +53,7 @@ public struct HuggingFaceModelAsset: Sendable, Hashable {
     }
 }
 
-public struct HuggingFaceModelPackage: Sendable, Hashable {
+public struct HuggingFaceModelPackage: Sendable, Hashable, Codable {
     public var repository: HuggingFaceRepository
     public var assets: [HuggingFaceModelAsset]
 
@@ -113,7 +113,7 @@ public struct LoadedModelContents: Sendable {
     }
 }
 
-public enum LocalAIKitLoadPhase: Equatable, Sendable {
+public enum LocalAIKitModelStatus: Equatable, Sendable, Codable {
     case idle
     case downloading
     case loadingIntoMemory
@@ -129,8 +129,38 @@ public enum LocalAIKitError: Error, Equatable, Sendable {
     case invalidHTTPStatus(code: Int)
     case unableToCreateDirectory(URL)
     case checksumMismatch(expected: String, actual: String)
+    case missingBackgroundDownloadState
     case inferenceEngineNotConfigured
     case noLoadedModel
+}
+
+internal func localAIKitMessage(for error: Error) -> String {
+    if let localAIKitError = error as? LocalAIKitError {
+        switch localAIKitError {
+        case .emptyModelPackage:
+            return "The model package does not contain any files."
+        case .invalidRepository:
+            return "The Hugging Face repository identifier is invalid."
+        case .invalidRemoteURL:
+            return "The Hugging Face download URL could not be built."
+        case .missingModelFilename:
+            return "The model filename is missing."
+        case .invalidHTTPStatus(let code):
+            return "The download failed with HTTP status code \(code)."
+        case .unableToCreateDirectory(let url):
+            return "Unable to create a cache directory at \(url.path)."
+        case .checksumMismatch(let expected, let actual):
+            return "Checksum mismatch. Expected \(expected), got \(actual)."
+        case .missingBackgroundDownloadState:
+            return "The background download state could not be restored."
+        case .inferenceEngineNotConfigured:
+            return "No inference engine has been configured."
+        case .noLoadedModel:
+            return "No loaded model is available for inference."
+        }
+    }
+
+    return error.localizedDescription
 }
 
 public final class LocalAIKitClient: @unchecked Sendable {
@@ -146,15 +176,6 @@ public final class LocalAIKitClient: @unchecked Sendable {
         self.configuration = configuration
         self.modelDownloader = modelDownloader ?? HuggingFaceModelDownloader(cacheRoot: configuration.modelsDirectory)
         self.inferenceEngine = inferenceEngine ?? LocalAIKitInferenceEngineFactory.makeDefault()
-    }
-
-    public func prepareModel(_ package: HuggingFaceModelPackage) async throws -> DownloadedModel {
-        try await modelDownloader.download(package)
-    }
-
-    public func loadModel(_ package: HuggingFaceModelPackage) async throws -> LoadedModelContents {
-        let downloadedModel = try await prepareModel(package)
-        return try loadIntoMemory(downloadedModel)
     }
 
     public func loadIntoMemory(_ downloadedModel: DownloadedModel) throws -> LoadedModelContents {
@@ -177,7 +198,7 @@ public final class LocalAIKitClient: @unchecked Sendable {
 @MainActor
 @Observable
 public final class LocalAIKitLoadState {
-    public private(set) var phase: LocalAIKitLoadPhase = .idle
+    public private(set) var modelStatus: LocalAIKitModelStatus = .idle
     public private(set) var downloadedModel: DownloadedModel?
     public private(set) var loadedModel: LoadedModelContents?
     public private(set) var lastErrorMessage: String?
@@ -190,7 +211,7 @@ public final class LocalAIKitLoadState {
     }
 
     public var isBusy: Bool {
-        switch phase {
+        switch modelStatus {
         case .downloading, .loadingIntoMemory:
             return true
         case .idle, .ready, .failed:
@@ -198,12 +219,12 @@ public final class LocalAIKitLoadState {
         }
     }
 
-    public var phaseText: String {
-        String(describing: phase)
+    public var modelStatusText: String {
+        String(describing: modelStatus)
     }
 
     public var displayStatusText: String {
-        switch phase {
+        switch modelStatus {
         case .idle:
             return "Idle"
         case .downloading:
@@ -217,83 +238,73 @@ public final class LocalAIKitLoadState {
         }
     }
 
+    @available(*, deprecated, renamed: "modelStatus")
+    public var phase: LocalAIKitModelStatus {
+        modelStatus
+    }
+
+    @available(*, deprecated, renamed: "modelStatusText")
+    public var phaseText: String {
+        modelStatusText
+    }
+
     public func reset() {
-        phase = .idle
+        modelStatus = .idle
         downloadedModel = nil
         loadedModel = nil
         lastErrorMessage = nil
         statusMessage = nil
     }
 
-    public func load(_ package: HuggingFaceModelPackage) async {
+    public func load(
+        _ package: HuggingFaceModelPackage,
+        onProgress: (@Sendable (HuggingFaceModelDownloadProgress) async -> Void)? = nil
+    ) async {
         reset()
-        phase = .downloading
+        modelStatus = .downloading
         statusMessage = "Downloading model files..."
 
         do {
-            let downloaded = try await client.prepareModel(package)
+            let downloaded = try await client.prepareModel(package, onProgress: onProgress)
             downloadedModel = downloaded
 
-            phase = .loadingIntoMemory
+            modelStatus = .loadingIntoMemory
             statusMessage = "Loading model files into memory..."
 
             let loaded = try client.loadIntoMemory(downloaded)
             loadedModel = loaded
             lastErrorMessage = nil
-            phase = .ready
+            modelStatus = .ready
             statusMessage = "Model ready."
         } catch {
             let message = Self.message(for: error)
             lastErrorMessage = message
             statusMessage = message
-            phase = .failed(message: message)
+            modelStatus = .failed(message: message)
         }
     }
 
     public func load(downloadedModel: DownloadedModel) async {
         reset()
         self.downloadedModel = downloadedModel
-        phase = .loadingIntoMemory
+        modelStatus = .loadingIntoMemory
         statusMessage = "Loading model files into memory..."
 
         do {
             let loaded = try client.loadIntoMemory(downloadedModel)
             loadedModel = loaded
             lastErrorMessage = nil
-            phase = .ready
+            modelStatus = .ready
             statusMessage = "Model ready."
         } catch {
             let message = Self.message(for: error)
             lastErrorMessage = message
             statusMessage = message
-            phase = .failed(message: message)
+            modelStatus = .failed(message: message)
         }
     }
 
     private static func message(for error: Error) -> String {
-        if let localAIKitError = error as? LocalAIKitError {
-            switch localAIKitError {
-            case .emptyModelPackage:
-                return "The model package does not contain any files."
-            case .invalidRepository:
-                return "The Hugging Face repository identifier is invalid."
-            case .invalidRemoteURL:
-                return "The Hugging Face download URL could not be built."
-            case .missingModelFilename:
-                return "The model filename is missing."
-            case .invalidHTTPStatus(let code):
-                return "The download failed with HTTP status code \(code)."
-            case .unableToCreateDirectory(let url):
-                return "Unable to create a cache directory at \(url.path)."
-            case .checksumMismatch(let expected, let actual):
-                return "Checksum mismatch. Expected \(expected), got \(actual)."
-            case .inferenceEngineNotConfigured:
-                return "No inference engine has been configured."
-            case .noLoadedModel:
-                return "No loaded model is available for inference."
-            }
-        }
-
-        return error.localizedDescription
+        localAIKitMessage(for: error)
     }
 }

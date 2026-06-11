@@ -71,12 +71,14 @@ final class DemoAppModel {
 
     private let client: LocalAIKitClient
     private var loadState: LocalAIKitLoadState
+    private let downloadManager: LocalAIKitDownloadManager
     private var loadedModel: LoadedModelContents?
 
     init() {
         let client = LocalAIKitClient()
         self.client = client
         self.loadState = LocalAIKitLoadState(client: client)
+        self.downloadManager = .shared
         applySelectedBlueprint()
     }
 
@@ -90,7 +92,12 @@ final class DemoAppModel {
         !isWorking
     }
 
-    var loadPhaseText: String { loadState.phaseText }
+    var canQueueDownload: Bool {
+        !modelRepository.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+        !modelFilename.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    var modelStatusText: String { loadState.modelStatusText }
 
     var loadStatusText: String { loadState.displayStatusText }
 
@@ -114,6 +121,10 @@ final class DemoAppModel {
 
     var structuredBlueprintSummary: String {
         structuredBlueprint.summary
+    }
+
+    var downloads: [LocalAIKitModelDownload] {
+        downloadManager.downloads
     }
 
     var latestAssistantReplyText: String {
@@ -158,8 +169,14 @@ final class DemoAppModel {
 
         do {
             let package = try makePackage()
-            await loadState.load(package)
-            guard let loaded = await loadState.loadedModel, await loadState.phase == .ready else {
+            await loadState.load(package) { [weak self] progress in
+                Task { @MainActor in
+                    guard let self else { return }
+                    let percent = Int((progress.fractionCompleted * 100).rounded())
+                    self.statusText = "Downloading \(percent)%..."
+                }
+            }
+            guard let loaded = await loadState.loadedModel, await loadState.modelStatus == .ready else {
                 loadedModel = nil
                 errorText = await loadState.statusMessage ?? "Model load failed."
                 statusText = errorText ?? "Model load failed."
@@ -175,6 +192,15 @@ final class DemoAppModel {
             NSLog("LocalAIKitDemoApp: model loaded")
         } catch {
             NSLog("LocalAIKitDemoApp: downloadAndLoadModel failed: %@", error.localizedDescription)
+            handle(error: error)
+        }
+    }
+
+    func queueDownload() {
+        do {
+            let package = try makePackage()
+            downloadManager.queue(package)
+        } catch {
             handle(error: error)
         }
     }
