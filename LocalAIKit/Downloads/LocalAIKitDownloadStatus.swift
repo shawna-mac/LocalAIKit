@@ -7,6 +7,14 @@
 
 import Foundation
 
+public enum LocalAIKitDownloadStatus: Sendable, Hashable, Codable {
+    case queued
+    case downloading
+    case finished
+    case failed(message: String)
+    case cancelled
+}
+
 extension LocalAIKitDownloadStatus {
     var isActive: Bool {
         switch self {

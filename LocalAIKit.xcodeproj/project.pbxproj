@@ -15,13 +15,15 @@
 		0A0FD9562FD1E80E00E4013C /* LlamaBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FD9572FD1E80E00E4013C /* LlamaBridge.swift */; };
 		0A0FD9582FD1E80E00E4013C /* LocalAIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FD9592FD1E80E00E4013C /* LocalAIKit.swift */; };
 		0A0FD95A2FD1E80E00E4013C /* LocalAIKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FD95B2FD1E80E00E4013C /* LocalAIKitTests.swift */; };
-		0AE44E572FD7CA0A0032DB82 /* Downloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E562FD7CA0A0032DB82 /* Downloads.swift */; };
 		0AE44E5A2FDDB7870032DB82 /* LocalAIKitDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E592FDDB7810032DB82 /* LocalAIKitDownloadManager.swift */; };
 		0AE44E5C2FDDB85C0032DB82 /* LocalAIKitDownloadStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E5B2FDDB8580032DB82 /* LocalAIKitDownloadStatus.swift */; };
 		0AE44E5E2FDDBDDB0032DB82 /* HuggingFaceRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E5D2FDDBDD40032DB82 /* HuggingFaceRepository.swift */; };
 		0AE44E602FDDBDF40032DB82 /* HuggingFaceModelAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E5F2FDDBDF00032DB82 /* HuggingFaceModelAsset.swift */; };
 		0AE44E622FDDBE040032DB82 /* HuggingFaceModelPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E612FDDBDFF0032DB82 /* HuggingFaceModelPackage.swift */; };
 		0AE44E642FDDBE520032DB82 /* LocalAIKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E632FDDBE520032DB82 /* LocalAIKitError.swift */; };
+		0AE44E662FE0616D0032DB82 /* HuggingFaceModelDownlaodProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E652FE061670032DB82 /* HuggingFaceModelDownlaodProgress.swift */; };
+		0AE44E682FE0619A0032DB82 /* LocalAIKitModelDownload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E672FE061980032DB82 /* LocalAIKitModelDownload.swift */; };
+		0AE44E6A2FE061E50032DB82 /* LocalAIKitClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E692FE061E20032DB82 /* LocalAIKitClient.swift */; };
 		0AF60B792FCE84D70089AF48 /* LocalAIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */; };
 		1A3B4C5D6E7F8091A2B3C401 /* LocalAIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */; };
 		1A3B4C5D6E7F8091A2B3C411 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3B4C5D6E7F8091A2B3C412 /* main.swift */; };
@@ -66,13 +68,15 @@
 		0A0FD9572FD1E80E00E4013C /* LlamaBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LlamaBridge.swift; sourceTree = "<group>"; };
 		0A0FD9592FD1E80E00E4013C /* LocalAIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKit.swift; sourceTree = "<group>"; };
 		0A0FD95B2FD1E80E00E4013C /* LocalAIKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitTests.swift; sourceTree = "<group>"; };
-		0AE44E562FD7CA0A0032DB82 /* Downloads.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Downloads.swift; sourceTree = "<group>"; };
 		0AE44E592FDDB7810032DB82 /* LocalAIKitDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitDownloadManager.swift; sourceTree = "<group>"; };
 		0AE44E5B2FDDB8580032DB82 /* LocalAIKitDownloadStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitDownloadStatus.swift; sourceTree = "<group>"; };
 		0AE44E5D2FDDBDD40032DB82 /* HuggingFaceRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuggingFaceRepository.swift; sourceTree = "<group>"; };
 		0AE44E5F2FDDBDF00032DB82 /* HuggingFaceModelAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuggingFaceModelAsset.swift; sourceTree = "<group>"; };
 		0AE44E612FDDBDFF0032DB82 /* HuggingFaceModelPackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuggingFaceModelPackage.swift; sourceTree = "<group>"; };
 		0AE44E632FDDBE520032DB82 /* LocalAIKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitError.swift; sourceTree = "<group>"; };
+		0AE44E652FE061670032DB82 /* HuggingFaceModelDownlaodProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuggingFaceModelDownlaodProgress.swift; sourceTree = "<group>"; };
+		0AE44E672FE061980032DB82 /* LocalAIKitModelDownload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitModelDownload.swift; sourceTree = "<group>"; };
+		0AE44E692FE061E20032DB82 /* LocalAIKitClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitClient.swift; sourceTree = "<group>"; };
 		0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LocalAIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AF60B782FCE84D70089AF48 /* LocalAIKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LocalAIKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A3B4C5D6E7F8091A2B3C403 /* LocalAIKitCLI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LocalAIKitCLI; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -118,9 +122,11 @@
 		0AE44E582FDDB6A50032DB82 /* Downloads */ = {
 			isa = PBXGroup;
 			children = (
+				0AE44E692FE061E20032DB82 /* LocalAIKitClient.swift */,
+				0AE44E672FE061980032DB82 /* LocalAIKitModelDownload.swift */,
+				0AE44E652FE061670032DB82 /* HuggingFaceModelDownlaodProgress.swift */,
 				0AE44E5B2FDDB8580032DB82 /* LocalAIKitDownloadStatus.swift */,
 				0AE44E592FDDB7810032DB82 /* LocalAIKitDownloadManager.swift */,
-				0AE44E562FD7CA0A0032DB82 /* Downloads.swift */,
 			);
 			path = Downloads;
 			sourceTree = "<group>";
@@ -316,12 +322,14 @@
 				0AE44E5A2FDDB7870032DB82 /* LocalAIKitDownloadManager.swift in Sources */,
 				0A0FD9502FD1E80E00E4013C /* Agents.swift in Sources */,
 				0AE44E5C2FDDB85C0032DB82 /* LocalAIKitDownloadStatus.swift in Sources */,
+				0AE44E6A2FE061E50032DB82 /* LocalAIKitClient.swift in Sources */,
 				0AE44E642FDDBE520032DB82 /* LocalAIKitError.swift in Sources */,
-				0AE44E572FD7CA0A0032DB82 /* Downloads.swift in Sources */,
 				0A0FD9522FD1E80E00E4013C /* HuggingFaceModelStore.swift in Sources */,
 				0AE44E622FDDBE040032DB82 /* HuggingFaceModelPackage.swift in Sources */,
 				0A0FD9542FD1E80E00E4013C /* Inference.swift in Sources */,
 				0A0FD9562FD1E80E00E4013C /* LlamaBridge.swift in Sources */,
+				0AE44E662FE0616D0032DB82 /* HuggingFaceModelDownlaodProgress.swift in Sources */,
+				0AE44E682FE0619A0032DB82 /* LocalAIKitModelDownload.swift in Sources */,
 				0AE44E602FDDBDF40032DB82 /* HuggingFaceModelAsset.swift in Sources */,
 				0A0FD9582FD1E80E00E4013C /* LocalAIKit.swift in Sources */,
 				0AE44E5E2FDDBDDB0032DB82 /* HuggingFaceRepository.swift in Sources */,
