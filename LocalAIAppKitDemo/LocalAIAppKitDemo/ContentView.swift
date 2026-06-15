@@ -289,10 +289,6 @@ struct ContentView: View {
 //                    Text("Phase: \(model.loadPhaseText)")
                     Text("Status: \(model.loadStatusText)")
                     Text("Model: \(model.modelSummary)")
-                    if let errorText = model.errorText, !errorText.isEmpty {
-                        Text("Error: \(errorText)")
-                            .foregroundStyle(.red)
-                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }

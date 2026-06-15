@@ -403,7 +403,6 @@ public final class LocalAIKitInferenceState {
     public private(set) var request: LocalAIKitInferenceRequest?
     public private(set) var result: LocalAIKitInferenceResult?
     public private(set) var outputText: String = ""
-    public private(set) var lastErrorMessage: String?
     public private(set) var statusMessage: String?
 
     private let client: LocalAIKitClient
@@ -432,7 +431,6 @@ public final class LocalAIKitInferenceState {
         request = nil
         result = nil
         outputText = ""
-        lastErrorMessage = nil
         statusMessage = nil
     }
 
@@ -465,13 +463,11 @@ public final class LocalAIKitInferenceState {
 
             result = generatedResult
             outputText = generatedResult.text
-            lastErrorMessage = nil
             phase = .ready
             statusMessage = "Generation complete."
             localAIKitLog("LocalAIKitInferenceState.generate completed")
         } catch {
             let message = Self.message(for: error)
-            lastErrorMessage = message
             statusMessage = message
             phase = .failed(message: message)
             localAIKitLog("LocalAIKitInferenceState.generate failed: \(message)")
@@ -499,6 +495,12 @@ public final class LocalAIKitInferenceState {
                 return "No inference engine has been configured."
             case .noLoadedModel:
                 return "No loaded model is available for inference."
+            case .missingBackgroundDownloadState:
+                return ""
+            case .modelDownloadIncomplete(filename: let filename):
+                return ""
+            case .modelDownloadFailed(message: let message):
+                return ""
             }
         }
 

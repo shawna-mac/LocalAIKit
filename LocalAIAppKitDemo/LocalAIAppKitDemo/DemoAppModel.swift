@@ -53,7 +53,6 @@ final class DemoAppModel {
     var statusText: String = "Enter a model and download it to begin."
     var inferencePhaseText: String = "idle"
     var outputText: String = ""
-    var errorText: String?
     var isWorking: Bool = false
     var generationStatusText: String = "Idle"
     var structuredPromptText: String = "Extract a contact card with exactly these fields: name, title, and email. My name is Taylor Chen, I work at LocalAIKit Labs as a product engineer, and my email is taylor@localaikit.dev."
@@ -99,7 +98,20 @@ final class DemoAppModel {
 
     var modelStatusText: String { loadState.modelStatusText }
 
-    var loadStatusText: String { loadState.displayStatusText }
+    var loadStatusText: String {
+        switch loadState.modelStatus {
+        case .idle:
+            return "Idle"
+        case .downloading:
+            return "Downloading model files..."
+        case .loadingIntoMemory:
+            return "Loading model files into memory..."
+        case .ready:
+            return "Model ready."
+        case .failed(let error):
+            return error.localizedDescription
+        }
+    }
 
     var modelSummary: String {
         let revision = modelRevision.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -157,7 +169,6 @@ final class DemoAppModel {
     func downloadAndLoadModel() async {
         NSLog("LocalAIKitDemoApp: downloadAndLoadModel started")
         isWorking = true
-        errorText = nil
         outputText = ""
         statusText = "Preparing model..."
         inferencePhaseText = "idle"
@@ -169,23 +180,20 @@ final class DemoAppModel {
 
         do {
             let package = try makePackage()
-            await loadState.load(package) { [weak self] progress in
-                Task { @MainActor in
-                    guard let self else { return }
-                    let percent = Int((progress.fractionCompleted * 100).rounded())
+            await loadState.load(package) { progress in
+                let percent = Int((progress.fractionCompleted * 100).rounded())
+                Task { @MainActor [percent] in
                     self.statusText = "Downloading \(percent)%..."
                 }
             }
-            guard let loaded = await loadState.loadedModel, await loadState.modelStatus == .ready else {
+            guard let loaded = loadState.loadedModel, loadState.isReady else {
                 loadedModel = nil
-                errorText = await loadState.statusMessage ?? "Model load failed."
-                statusText = errorText ?? "Model load failed."
+                statusText = loadStatusText
                 return
             }
 
             loadedModel = loaded
             statusText = "Model loaded. You can chat now."
-            errorText = nil
             inputText = selectedBlueprint.blueprint.starterPrompt
             structuredPromptText = structuredBlueprint.blueprint.starterPrompt
             chatMessages.append(.init(role: .system, text: "Loaded \(modelSummary)."))
@@ -215,13 +223,11 @@ final class DemoAppModel {
 
         guard let loadedModel else {
             NSLog("LocalAIKitDemoApp: sendMessage blocked because model is not loaded")
-            errorText = "Download and load a model before chatting."
-            statusText = errorText ?? "Model not ready."
+            statusText = loadStatusText
             return
         }
 
         isWorking = true
-        errorText = nil
         outputText = "Generating response..."
         inferencePhaseText = "generating"
         generationStatusText = "Generating response..."
@@ -295,7 +301,6 @@ final class DemoAppModel {
         structuredResultText = structuredStatusText
         structuredOutputJSONText = ""
         structuredOutputText = ""
-        errorText = nil
         inferencePhaseText = "generating"
 
         do {
@@ -329,7 +334,6 @@ final class DemoAppModel {
             structuredStatusText = message
             structuredResultText = message
             structuredOutputJSONText = ""
-            errorText = message
             statusText = message
             inferencePhaseText = "failed"
             NSLog("LocalAIKitDemoApp: runStructuredDemo failed: %@", message)
@@ -361,7 +365,6 @@ final class DemoAppModel {
         toolStatusText = "Running tool agent..."
         toolOutputText = ""
         toolObservationsText = "Working..."
-        errorText = nil
 
         let agent = Agent(title: "Time Agent", systemPrompt: "You are a helpful assistant that can use tools to answer time questions.")
             .register(
@@ -402,7 +405,6 @@ final class DemoAppModel {
             toolStatusText = message
             toolOutputText = message
             toolObservationsText = message
-            errorText = message
             statusText = message
             NSLog("LocalAIKitDemoApp: runToolDemo failed: %@", message)
         }
@@ -465,7 +467,6 @@ final class DemoAppModel {
 
     private func handle(error: Error) {
         let message = error.localizedDescription
-        errorText = message
         statusText = message
         outputText = message
         generationStatusText = message

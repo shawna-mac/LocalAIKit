@@ -102,7 +102,7 @@ let agent = Agent(title: "Time Agent")
 - ``LocalAIKitInferenceEngine``
 - ``LlamaCppInferenceEngine``
 - ``UnsupportedLocalAIKitInferenceEngine``
-- ``HuggingFaceModelDownloader``
+- ``HuggingFaceModelStore``
 - ``LocalAIKitAgentBlueprint``
 - ``LocalAIKitAgent``
 - ``LocalAIKitAgentBlueprintPreset``

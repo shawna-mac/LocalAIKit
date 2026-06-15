@@ -1,0 +1,850 @@
+{
+  "builtTestProducts" : [
+    {
+      "binaryPath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.xctest/Contents/MacOS/LocalAIKitPackageTests",
+      "packagePath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit",
+      "productName" : "LocalAIKitPackageTests"
+    }
+  ],
+  "copyCommands" : {
+    "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/llama.framework" : {
+      "inputs" : [
+        {
+          "kind" : "directory",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/build-apple/llama.xcframework/macos-arm64_x86_64/llama.framework"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "directory",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/llama.framework"
+        }
+      ]
+    }
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.LocalAIKit-arm64-apple-macosx26.0-debug.module" : {
+      "executable" : "/Library/Developer/CommandLineTools/usr/bin/swiftc",
+      "fileList" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/sources",
+      "importPath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Agents.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Downloads/Downloads.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Downloads/LocalAIKitDownloadManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Downloads/LocalAIKitDownloadStatus.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/HuggingFaceModelAsset.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/HuggingFaceModelDownloader.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/HuggingFaceModelPackage.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/HuggingFaceRepository.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Inference.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/LlamaBridge.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/LocalAIKit.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/LocalAIKitError.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt"
+        },
+        {
+          "kind" : "directory",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/llama.framework"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "LocalAIKit",
+      "moduleOutputPath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/Modules/LocalAIKit.swiftmodule",
+      "objects" : [
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/Agents.swift.o",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/Downloads.swift.o",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/LocalAIKitDownloadManager.swift.o",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/LocalAIKitDownloadStatus.swift.o",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/HuggingFaceModelAsset.swift.o",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/HuggingFaceModelDownloader.swift.o",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/HuggingFaceModelPackage.swift.o",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/HuggingFaceRepository.swift.o",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/Inference.swift.o",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/LlamaBridge.swift.o",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/LocalAIKit.swift.o",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/LocalAIKitError.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx13.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j14",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-I",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/build-apple/llama.xcframework/macos-arm64_x86_64",
+        "-Xcc",
+        "-I",
+        "-Xcc",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/build-apple/llama.xcframework/macos-arm64_x86_64",
+        "-module-cache-path",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-F",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/include/LocalAIKit-Swift.h",
+        "-swift-version",
+        "5",
+        "-I",
+        "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+        "-L",
+        "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+        "-plugin-path",
+        "/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "localaikit"
+      ],
+      "outputFileMapPath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/Agents.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/Downloads.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/LocalAIKitDownloadManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/LocalAIKitDownloadStatus.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/HuggingFaceModelAsset.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/HuggingFaceModelDownloader.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/HuggingFaceModelPackage.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/HuggingFaceRepository.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/Inference.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/LlamaBridge.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/LocalAIKit.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/LocalAIKitError.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/Modules/LocalAIKit.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Agents.swift",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Downloads/Downloads.swift",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Downloads/LocalAIKitDownloadManager.swift",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Downloads/LocalAIKitDownloadStatus.swift",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/HuggingFaceModelAsset.swift",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/HuggingFaceModelDownloader.swift",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/HuggingFaceModelPackage.swift",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/HuggingFaceRepository.swift",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Inference.swift",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/LlamaBridge.swift",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/LocalAIKit.swift",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/LocalAIKitError.swift"
+      ],
+      "tempsPath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.LocalAIKitPackageTests-arm64-apple-macosx26.0-debug.module" : {
+      "executable" : "/Library/Developer/CommandLineTools/usr/bin/swiftc",
+      "fileList" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.build/sources",
+      "importPath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.derived/runner.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/Modules/LocalAIKitTests.swiftmodule"
+        },
+        {
+          "kind" : "directory",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/llama.framework"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "LocalAIKitPackageTests",
+      "moduleOutputPath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/Modules/LocalAIKitPackageTests.swiftmodule",
+      "objects" : [
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.build/runner.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx13.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-Xfrontend",
+        "-enable-cross-import-overlays",
+        "-j14",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-I",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/build-apple/llama.xcframework/macos-arm64_x86_64",
+        "-Xcc",
+        "-I",
+        "-Xcc",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/build-apple/llama.xcframework/macos-arm64_x86_64",
+        "-module-cache-path",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-F",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.build/include/LocalAIKitPackageTests-Swift.h",
+        "-I",
+        "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+        "-L",
+        "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+        "-plugin-path",
+        "/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "localaikit"
+      ],
+      "outputFileMapPath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.build/runner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/Modules/LocalAIKitPackageTests.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.derived/runner.swift"
+      ],
+      "tempsPath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.LocalAIKitTests-arm64-apple-macosx26.0-debug.module" : {
+      "executable" : "/Library/Developer/CommandLineTools/usr/bin/swiftc",
+      "fileList" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitTests.build/sources",
+      "importPath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKitTests/LocalAIKitTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/Modules/LocalAIKit.swiftmodule"
+        },
+        {
+          "kind" : "directory",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/llama.framework"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitTests.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "LocalAIKitTests",
+      "moduleOutputPath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/Modules/LocalAIKitTests.swiftmodule",
+      "objects" : [
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitTests.build/LocalAIKitTests.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx13.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-Xfrontend",
+        "-enable-cross-import-overlays",
+        "-j14",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-I",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/build-apple/llama.xcframework/macos-arm64_x86_64",
+        "-Xcc",
+        "-I",
+        "-Xcc",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/build-apple/llama.xcframework/macos-arm64_x86_64",
+        "-module-cache-path",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-F",
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug",
+        "-swift-version",
+        "5",
+        "-I",
+        "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+        "-L",
+        "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+        "-plugin-path",
+        "/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "localaikit"
+      ],
+      "outputFileMapPath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitTests.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitTests.build/LocalAIKitTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/Modules/LocalAIKitTests.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKitTests/LocalAIKitTests.swift"
+      ],
+      "tempsPath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitTests.build",
+      "wholeModuleOptimization" : false
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "LocalAIKit" : [
+      "/Library/Developer/CommandLineTools/usr/bin/swiftc",
+      "-module-name",
+      "LocalAIKit",
+      "-package-name",
+      "localaikit",
+      "-c",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Agents.swift",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Downloads/Downloads.swift",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Downloads/LocalAIKitDownloadManager.swift",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Downloads/LocalAIKitDownloadStatus.swift",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/HuggingFaceModelAsset.swift",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/HuggingFaceModelDownloader.swift",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/HuggingFaceModelPackage.swift",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/HuggingFaceRepository.swift",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Inference.swift",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/LlamaBridge.swift",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/LocalAIKit.swift",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/LocalAIKitError.swift",
+      "-I",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx13.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j14",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-I",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/build-apple/llama.xcframework/macos-arm64_x86_64",
+      "-Xcc",
+      "-I",
+      "-Xcc",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/build-apple/llama.xcframework/macos-arm64_x86_64",
+      "-module-cache-path",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-F",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/include/LocalAIKit-Swift.h",
+      "-swift-version",
+      "5",
+      "-I",
+      "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+      "-L",
+      "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+      "-plugin-path",
+      "/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "localaikit",
+      "-driver-use-frontend-path",
+      "/Library/Developer/CommandLineTools/usr/bin/swiftc"
+    ],
+    "LocalAIKitPackageTests" : [
+      "/Library/Developer/CommandLineTools/usr/bin/swiftc",
+      "-module-name",
+      "LocalAIKitPackageTests",
+      "-package-name",
+      "localaikit",
+      "-c",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.derived/runner.swift",
+      "-I",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx13.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-Xfrontend",
+      "-enable-cross-import-overlays",
+      "-j14",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-I",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/build-apple/llama.xcframework/macos-arm64_x86_64",
+      "-Xcc",
+      "-I",
+      "-Xcc",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/build-apple/llama.xcframework/macos-arm64_x86_64",
+      "-module-cache-path",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-F",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.build/include/LocalAIKitPackageTests-Swift.h",
+      "-I",
+      "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+      "-L",
+      "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+      "-plugin-path",
+      "/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "localaikit",
+      "-driver-use-frontend-path",
+      "/Library/Developer/CommandLineTools/usr/bin/swiftc"
+    ],
+    "LocalAIKitTests" : [
+      "/Library/Developer/CommandLineTools/usr/bin/swiftc",
+      "-module-name",
+      "LocalAIKitTests",
+      "-package-name",
+      "localaikit",
+      "-c",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKitTests/LocalAIKitTests.swift",
+      "-I",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx13.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-Xfrontend",
+      "-enable-cross-import-overlays",
+      "-j14",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-I",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/build-apple/llama.xcframework/macos-arm64_x86_64",
+      "-Xcc",
+      "-I",
+      "-Xcc",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/build-apple/llama.xcframework/macos-arm64_x86_64",
+      "-module-cache-path",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-F",
+      "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug",
+      "-swift-version",
+      "5",
+      "-I",
+      "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+      "-L",
+      "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+      "-plugin-path",
+      "/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "localaikit",
+      "-driver-use-frontend-path",
+      "/Library/Developer/CommandLineTools/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "LocalAIKit" : [
+      "llama"
+    ],
+    "LocalAIKitPackageTests" : [
+      "LocalAIKitTests",
+      "LocalAIKit",
+      "llama"
+    ],
+    "LocalAIKitTests" : [
+      "LocalAIKit",
+      "llama"
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+    "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.derived/runner.swift" : {
+      "inputs" : [
+
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.derived/runner.swift"
+        }
+      ]
+    }
+  },
+  "traitConfiguration" : {
+    "default" : {
+
+    }
+  },
+  "writeCommands" : {
+    "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Agents.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Downloads/Downloads.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Downloads/LocalAIKitDownloadManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Downloads/LocalAIKitDownloadStatus.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/HuggingFaceModelAsset.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/HuggingFaceModelDownloader.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/HuggingFaceModelPackage.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/HuggingFaceRepository.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/Inference.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/LlamaBridge.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/LocalAIKit.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKit/LocalAIKitError.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/sources"
+    },
+    "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.derived/runner.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.build/sources"
+    },
+    "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.product/Objects.LinkFileList" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/Agents.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/Downloads.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/HuggingFaceModelAsset.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/HuggingFaceModelDownloader.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/HuggingFaceModelPackage.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/HuggingFaceRepository.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/Inference.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/LlamaBridge.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/LocalAIKit.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/LocalAIKitDownloadManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/LocalAIKitDownloadStatus.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKit.build/LocalAIKitError.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.build/runner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitTests.build/LocalAIKitTests.swift.o"
+        }
+      ],
+      "outputFilePath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitPackageTests.product/Objects.LinkFileList"
+    },
+    "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitTests.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/LocalAIKitTests/LocalAIKitTests.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/LocalAIKitTests.build/sources"
+    },
+    "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Library/Developer/CommandLineTools/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt"
+    }
+  }
+}

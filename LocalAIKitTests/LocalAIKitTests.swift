@@ -8,7 +8,7 @@ final class LocalAIKitTests: XCTestCase {
     }
 
     func testDownloadCacheKeySeparatesRepositoryAndRevision() throws {
-        let downloader = HuggingFaceModelDownloader(cacheRoot: FileManager.default.temporaryDirectory)
+        let modelStore = HuggingFaceModelStore(cacheRoot: FileManager.default.temporaryDirectory)
         let packageA = HuggingFaceModelPackage(
             repository: HuggingFaceRepository(identifier: "org/model-a", revision: "main"),
             assets: [HuggingFaceModelAsset(filename: "model.gguf")]
@@ -19,8 +19,8 @@ final class LocalAIKitTests: XCTestCase {
         )
 
         XCTAssertNotEqual(
-            downloader.cacheKey(for: packageA),
-            downloader.cacheKey(for: packageB)
+            modelStore.cacheKey(for: packageA),
+            modelStore.cacheKey(for: packageB)
         )
     }
 
@@ -326,14 +326,13 @@ final class LocalAIKitTests: XCTestCase {
 
         let item = LocalAIKitModelDownload(
             id: "download-1",
-            package: package,
-            downloadStatus: .downloading,
-            fractionCompleted: 0.42,
-            currentAssetFilename: "model.gguf"
+            package: package
         )
 
-        XCTAssertEqual(item.progressPercentage, 42)
-        XCTAssertEqual(item.statusText, "Downloading model.gguf")
+        XCTAssertEqual(item.downloadStatus, .queued)
+        XCTAssertEqual(item.progressPercentage, 0)
+        XCTAssertEqual(item.statusText, "Queued")
+
         XCTAssertEqual(item.displayName, "org/model @ main")
     }
 

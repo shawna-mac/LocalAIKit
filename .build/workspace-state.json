@@ -1,0 +1,31 @@
+{
+  "object" : {
+    "artifacts" : [
+      {
+        "kind" : {
+          "xcframework" : {
+
+          }
+        },
+        "packageRef" : {
+          "identity" : "localaikit",
+          "kind" : "root",
+          "location" : "/Users/smacnabb/Documents/GitHub/LocalAIKit",
+          "name" : "LocalAIKit"
+        },
+        "path" : "/Users/smacnabb/Documents/GitHub/LocalAIKit/build-apple/llama.xcframework",
+        "source" : {
+          "type" : "local"
+        },
+        "targetName" : "llama"
+      }
+    ],
+    "dependencies" : [
+
+    ],
+    "prebuilts" : [
+
+    ]
+  },
+  "version" : 7
+}
