@@ -45,7 +45,7 @@ struct ContentView: View {
                 modelFields(model)
 
                 HStack(spacing: 12) {
-                    Button(model.isWorking ? "Working..." : "Download & Load Model") {
+                    Button(model.modelStatus == .downloading || model.modelStatus == .loadingIntoMemory ? "Working..." : "Download & Load Model") {
                         Task {
                             await model.downloadAndLoadModel()
                         }
@@ -137,6 +137,18 @@ struct ContentView: View {
                         .foregroundStyle(.secondary)
                         .textSelection(.enabled)
                 }
+
+                HStack(spacing: 12) {
+                    Button("Run Blueprint") {
+                        Task {
+                            await model.runSelectedBlueprint()
+                        }
+                    }
+                    .disabled(!model.canChat)
+
+                    Text(model.canChat ? "Runs the selected agent preset with its starter prompt." : "Download and load a model first.")
+                        .foregroundStyle(.secondary)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -165,7 +177,7 @@ struct ContentView: View {
                 }
 
                 HStack(spacing: 12) {
-                    Button(model.isWorking ? "Working..." : "Generate Structured Output") {
+                    Button(model.modelStatus == .generating ? "Working..." : "Generate Structured Output") {
                         Task {
                             await model.runStructuredDemo()
                         }
@@ -201,7 +213,7 @@ struct ContentView: View {
                 }
 
                 HStack(spacing: 12) {
-                    Button(model.isWorking ? "Working..." : "Run Tool Demo") {
+                    Button(model.modelStatus == .generating ? "Working..." : "Run Tool Demo") {
                         Task {
                             await model.runToolDemo()
                         }
@@ -265,7 +277,7 @@ struct ContentView: View {
                         .disabled(!model.canChat)
 
                     HStack {
-                        Button(model.isWorking ? "Thinking..." : "Send Message") {
+                        Button(model.modelStatus == .generating ? "Thinking..." : "Send Message") {
                             Task {
                                 await model.sendMessage()
                             }

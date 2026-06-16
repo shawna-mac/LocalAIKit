@@ -23,7 +23,12 @@
 		0AE44E642FDDBE520032DB82 /* LocalAIKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E632FDDBE520032DB82 /* LocalAIKitError.swift */; };
 		0AE44E662FE0616D0032DB82 /* HuggingFaceModelDownlaodProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E652FE061670032DB82 /* HuggingFaceModelDownlaodProgress.swift */; };
 		0AE44E682FE0619A0032DB82 /* LocalAIKitModelDownload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E672FE061980032DB82 /* LocalAIKitModelDownload.swift */; };
-		0AE44E6A2FE061E50032DB82 /* LocalAIKitClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E692FE061E20032DB82 /* LocalAIKitClient.swift */; };
+		0AE44E6A2FE061E50032DB82 /* LocalAIKitModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E692FE061E20032DB82 /* LocalAIKitModelManager.swift */; };
+		0AE44E6D2FE0693E0032DB82 /* LocalAIKitInferenceRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E6C2FE0693B0032DB82 /* LocalAIKitInferenceRequest.swift */; };
+		0AE44E6F2FE06E4D0032DB82 /* LocalAIKitInferenceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E6E2FE06E4C0032DB82 /* LocalAIKitInferenceError.swift */; };
+		0AE44E712FE06EBF0032DB82 /* LocalAIKitInferenceState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E702FE06EBC0032DB82 /* LocalAIKitInferenceState.swift */; };
+		0AE44E742FE106AA0032DB82 /* DownloadedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E732FE106A40032DB82 /* DownloadedModel.swift */; };
+		0AE44E792FE107140032DB82 /* LocalAIKitModelStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E782FE1070C0032DB82 /* LocalAIKitModelStatus.swift */; };
 		0AF60B792FCE84D70089AF48 /* LocalAIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */; };
 		1A3B4C5D6E7F8091A2B3C401 /* LocalAIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */; };
 		1A3B4C5D6E7F8091A2B3C411 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3B4C5D6E7F8091A2B3C412 /* main.swift */; };
@@ -76,7 +81,12 @@
 		0AE44E632FDDBE520032DB82 /* LocalAIKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitError.swift; sourceTree = "<group>"; };
 		0AE44E652FE061670032DB82 /* HuggingFaceModelDownlaodProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuggingFaceModelDownlaodProgress.swift; sourceTree = "<group>"; };
 		0AE44E672FE061980032DB82 /* LocalAIKitModelDownload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitModelDownload.swift; sourceTree = "<group>"; };
-		0AE44E692FE061E20032DB82 /* LocalAIKitClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitClient.swift; sourceTree = "<group>"; };
+		0AE44E692FE061E20032DB82 /* LocalAIKitModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitModelManager.swift; sourceTree = "<group>"; };
+		0AE44E6C2FE0693B0032DB82 /* LocalAIKitInferenceRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitInferenceRequest.swift; sourceTree = "<group>"; };
+		0AE44E6E2FE06E4C0032DB82 /* LocalAIKitInferenceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitInferenceError.swift; sourceTree = "<group>"; };
+		0AE44E702FE06EBC0032DB82 /* LocalAIKitInferenceState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitInferenceState.swift; sourceTree = "<group>"; };
+		0AE44E732FE106A40032DB82 /* DownloadedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadedModel.swift; sourceTree = "<group>"; };
+		0AE44E782FE1070C0032DB82 /* LocalAIKitModelStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitModelStatus.swift; sourceTree = "<group>"; };
 		0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LocalAIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AF60B782FCE84D70089AF48 /* LocalAIKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LocalAIKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A3B4C5D6E7F8091A2B3C403 /* LocalAIKitCLI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LocalAIKitCLI; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -122,13 +132,45 @@
 		0AE44E582FDDB6A50032DB82 /* Downloads */ = {
 			isa = PBXGroup;
 			children = (
-				0AE44E692FE061E20032DB82 /* LocalAIKitClient.swift */,
+				0AE44E732FE106A40032DB82 /* DownloadedModel.swift */,
+				0A0FD9532FD1E80E00E4013C /* HuggingFaceModelStore.swift */,
+				0AE44E612FDDBDFF0032DB82 /* HuggingFaceModelPackage.swift */,
+				0AE44E5F2FDDBDF00032DB82 /* HuggingFaceModelAsset.swift */,
+				0AE44E5D2FDDBDD40032DB82 /* HuggingFaceRepository.swift */,
 				0AE44E672FE061980032DB82 /* LocalAIKitModelDownload.swift */,
 				0AE44E652FE061670032DB82 /* HuggingFaceModelDownlaodProgress.swift */,
 				0AE44E5B2FDDB8580032DB82 /* LocalAIKitDownloadStatus.swift */,
 				0AE44E592FDDB7810032DB82 /* LocalAIKitDownloadManager.swift */,
 			);
 			path = Downloads;
+			sourceTree = "<group>";
+		};
+		0AE44E6B2FE068F30032DB82 /* Inference */ = {
+			isa = PBXGroup;
+			children = (
+				0AE44E702FE06EBC0032DB82 /* LocalAIKitInferenceState.swift */,
+				0AE44E6E2FE06E4C0032DB82 /* LocalAIKitInferenceError.swift */,
+				0AE44E6C2FE0693B0032DB82 /* LocalAIKitInferenceRequest.swift */,
+				0AE44E632FDDBE520032DB82 /* LocalAIKitError.swift */,
+				0A0FD9552FD1E80E00E4013C /* Inference.swift */,
+			);
+			path = Inference;
+			sourceTree = "<group>";
+		};
+		0AE44E722FE105000032DB82 /* Agents */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Agents;
+			sourceTree = "<group>";
+		};
+		0AE44E772FE106DE0032DB82 /* ModelManagement */ = {
+			isa = PBXGroup;
+			children = (
+				0AE44E692FE061E20032DB82 /* LocalAIKitModelManager.swift */,
+				0AE44E782FE1070C0032DB82 /* LocalAIKitModelStatus.swift */,
+			);
+			path = ModelManagement;
 			sourceTree = "<group>";
 		};
 		0AF60B632FCE84D70089AF48 = {
@@ -155,14 +197,11 @@
 		0AF60B6F2FCE84D70089AF48 /* LocalAIKit */ = {
 			isa = PBXGroup;
 			children = (
-				0AE44E632FDDBE520032DB82 /* LocalAIKitError.swift */,
-				0AE44E612FDDBDFF0032DB82 /* HuggingFaceModelPackage.swift */,
-				0AE44E5F2FDDBDF00032DB82 /* HuggingFaceModelAsset.swift */,
-				0AE44E5D2FDDBDD40032DB82 /* HuggingFaceRepository.swift */,
+				0AE44E772FE106DE0032DB82 /* ModelManagement */,
+				0AE44E722FE105000032DB82 /* Agents */,
+				0AE44E6B2FE068F30032DB82 /* Inference */,
 				0AE44E582FDDB6A50032DB82 /* Downloads */,
 				0A0FD9512FD1E80E00E4013C /* Agents.swift */,
-				0A0FD9532FD1E80E00E4013C /* HuggingFaceModelStore.swift */,
-				0A0FD9552FD1E80E00E4013C /* Inference.swift */,
 				0A0FD9572FD1E80E00E4013C /* LlamaBridge.swift */,
 				0A0FD9592FD1E80E00E4013C /* LocalAIKit.swift */,
 			);
@@ -319,11 +358,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0AE44E742FE106AA0032DB82 /* DownloadedModel.swift in Sources */,
 				0AE44E5A2FDDB7870032DB82 /* LocalAIKitDownloadManager.swift in Sources */,
 				0A0FD9502FD1E80E00E4013C /* Agents.swift in Sources */,
+				0AE44E712FE06EBF0032DB82 /* LocalAIKitInferenceState.swift in Sources */,
 				0AE44E5C2FDDB85C0032DB82 /* LocalAIKitDownloadStatus.swift in Sources */,
-				0AE44E6A2FE061E50032DB82 /* LocalAIKitClient.swift in Sources */,
+				0AE44E6A2FE061E50032DB82 /* LocalAIKitModelManager.swift in Sources */,
 				0AE44E642FDDBE520032DB82 /* LocalAIKitError.swift in Sources */,
+				0AE44E6D2FE0693E0032DB82 /* LocalAIKitInferenceRequest.swift in Sources */,
 				0A0FD9522FD1E80E00E4013C /* HuggingFaceModelStore.swift in Sources */,
 				0AE44E622FDDBE040032DB82 /* HuggingFaceModelPackage.swift in Sources */,
 				0A0FD9542FD1E80E00E4013C /* Inference.swift in Sources */,
@@ -333,6 +375,8 @@
 				0AE44E602FDDBDF40032DB82 /* HuggingFaceModelAsset.swift in Sources */,
 				0A0FD9582FD1E80E00E4013C /* LocalAIKit.swift in Sources */,
 				0AE44E5E2FDDBDDB0032DB82 /* HuggingFaceRepository.swift in Sources */,
+				0AE44E792FE107140032DB82 /* LocalAIKitModelStatus.swift in Sources */,
+				0AE44E6F2FE06E4D0032DB82 /* LocalAIKitInferenceError.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

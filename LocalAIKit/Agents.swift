@@ -477,7 +477,7 @@ public struct LocalAIKitAgent: Sendable, Hashable {
 
     public func run(
         prompt: String,
-        using client: LocalAIKitClient,
+        using client: LocalAIKitModelManager,
         loadedModel: LoadedModelContents,
         history: [LocalAIKitConversationTurn] = [],
         overrideSystemPrompt: String? = nil,
@@ -490,7 +490,7 @@ public struct LocalAIKitAgent: Sendable, Hashable {
                 overrideSystemPrompt: overrideSystemPrompt
             )
             let result = try await client.generate(request, using: loadedModel, onPartialText: onPartialText)
-            return LocalAIKitAgentRunResult(finalResponse: result.text)
+            return LocalAIKitAgentRunResult(finalResponse: result)
         }
 
         var currentHistory = history
@@ -509,7 +509,7 @@ public struct LocalAIKitAgent: Sendable, Hashable {
                 onPartialText: onPartialText
             )
 
-            guard let envelope = decodeToolCall(from: result.text) else {
+            guard let envelope = decodeToolCall(from: result) else {
                 let message = "Unable to decode a tool call from the model output."
                 observations.append(.init(name: "tool_decode", result: message))
                 currentHistory.append(.init(role: .system, text: message))
@@ -783,7 +783,7 @@ public enum LocalAIKitAgentBlueprintPreset: String, CaseIterable, Identifiable, 
     }
 }
 
-public extension LocalAIKitClient {
+public extension LocalAIKitModelManager {
     func makeAgent(blueprint: LocalAIKitAgentBlueprint) -> LocalAIKitAgent {
         LocalAIKitAgent(blueprint: blueprint)
     }

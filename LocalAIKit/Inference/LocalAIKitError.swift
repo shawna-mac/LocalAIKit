@@ -22,7 +22,7 @@ public enum LocalAIKitError: Error, Equatable, Sendable {
     case noLoadedModel
 }
 
-internal func localAIKitMessage(for error: Error) -> String {
+func localAIKitMessage(for error: Error) -> String {
     if let localAIKitError = error as? LocalAIKitError {
         switch localAIKitError {
         case .emptyModelPackage:

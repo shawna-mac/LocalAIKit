@@ -51,7 +51,7 @@ final class LocalAIKitTests: XCTestCase {
         }
 
         let downloadedModel = DownloadedModel(package: package, files: ["model.gguf": fileURL])
-        let client = LocalAIKitClient()
+        let client = LocalAIKitModelManager()
         let loadedModel = try client.loadIntoMemory(downloadedModel)
 
         XCTAssertEqual(loadedModel.data(for: "model.gguf"), expectedData)
@@ -61,7 +61,7 @@ final class LocalAIKitTests: XCTestCase {
         XCTAssertEqual(loadedModel.totalByteCount, expectedData.count)
     }
 
-    func testLoadStateUpdatesPhaseAndLoadedModel() async {
+    func testClientUpdatesModelStatusAndLoadedModel() async throws {
         let package = HuggingFaceModelPackage(
             repository: HuggingFaceRepository(identifier: "org/model", revision: "main"),
             assets: [HuggingFaceModelAsset(filename: "model.gguf")]
@@ -76,20 +76,19 @@ final class LocalAIKitTests: XCTestCase {
         }
 
         let downloadedModel = DownloadedModel(package: package, files: ["model.gguf": fileURL])
-        let state = await LocalAIKitLoadState()
+        let client = LocalAIKitModelManager()
 
-        await state.load(downloadedModel: downloadedModel)
+        let loadedModel = try client.load(downloadedModel: downloadedModel)
 
-        let modelStatus = await state.modelStatus
-        let statusMessage = await state.statusMessage
-        let downloaded = await state.downloadedModel
-        let loadedModel = await state.loadedModel
-        let isBusy = await state.isBusy
+        let modelStatus = await client.modelStatus
+        let statusMessage = await client.statusMessage
+        let clientLoadedModel = await client.loadedModel
+        let isBusy = await client.isBusy
 
         XCTAssertEqual(modelStatus, .ready)
         XCTAssertEqual(statusMessage, "Model ready.")
-        XCTAssertNotNil(downloaded)
-        XCTAssertEqual(loadedModel?.data(for: "model.gguf"), expectedData)
+        XCTAssertEqual(loadedModel.data(for: "model.gguf"), expectedData)
+        XCTAssertEqual(clientLoadedModel?.data(for: "model.gguf"), expectedData)
         XCTAssertFalse(isBusy)
     }
 
@@ -105,13 +104,13 @@ final class LocalAIKitTests: XCTestCase {
         }
 
         let downloadedModel = DownloadedModel(package: package, files: ["model.gguf": fileURL])
-        let engine = StubInferenceEngine(result: LocalAIKitInferenceResult(text: "hello from llama.cpp"))
-        let client = LocalAIKitClient(inferenceEngine: engine)
+        let engine = StubInferenceEngine(result: "hello from llama.cpp")
+        let client = LocalAIKitModelManager(inferenceEngine: engine)
         let request = LocalAIKitInferenceRequest(prompt: "Say hello")
 
         let result = try await client.generate(request, using: downloadedModel)
 
-        XCTAssertEqual(result.text, "hello from llama.cpp")
+        XCTAssertEqual(result, "hello from llama.cpp")
         XCTAssertEqual(await engine.receivedRequest()?.prompt, "Say hello")
         XCTAssertEqual(await engine.receivedModel()?.primaryFileURL, fileURL)
     }
@@ -135,8 +134,8 @@ final class LocalAIKitTests: XCTestCase {
         }
 
         let downloadedModel = DownloadedModel(package: package, files: ["model.gguf": fileURL])
-        let engine = StubInferenceEngine(result: LocalAIKitInferenceResult(text: #"{"name":"Ava","age":29,"isActive":true}"#))
-        let client = LocalAIKitClient(inferenceEngine: engine)
+        let engine = StubInferenceEngine(result: #"{"name":"Ava","age":29,"isActive":true}"#)
+        let client = LocalAIKitModelManager(inferenceEngine: engine)
         let request = LocalAIKitInferenceRequest(prompt: "Return a contact card")
 
         let decoded = try await client.generateStructured(request, as: ContactCard.self, using: downloadedModel)
@@ -182,8 +181,8 @@ final class LocalAIKitTests: XCTestCase {
         """
 
         let downloadedModel = DownloadedModel(package: package, files: ["model.gguf": fileURL])
-        let engine = StubInferenceEngine(result: LocalAIKitInferenceResult(text: noisyText))
-        let client = LocalAIKitClient(inferenceEngine: engine)
+        let engine = StubInferenceEngine(result: noisyText)
+        let client = LocalAIKitModelManager(inferenceEngine: engine)
         let request = LocalAIKitInferenceRequest(prompt: "Return a contact card")
 
         let decoded = try await client.generateStructured(request, as: ContactCard.self, using: downloadedModel)
@@ -246,8 +245,8 @@ final class LocalAIKitTests: XCTestCase {
         """
 
         let downloadedModel = DownloadedModel(package: package, files: ["model.gguf": fileURL])
-        let engine = StubInferenceEngine(result: LocalAIKitInferenceResult(text: noisyText))
-        let client = LocalAIKitClient(inferenceEngine: engine)
+        let engine = StubInferenceEngine(result: noisyText)
+        let client = LocalAIKitModelManager(inferenceEngine: engine)
         let request = LocalAIKitInferenceRequest(prompt: "Return structured output")
 
         let decoded = try await client.generateStructured(request, as: ModelPayload.self, using: downloadedModel)
@@ -279,8 +278,8 @@ final class LocalAIKitTests: XCTestCase {
         }
 
         let downloadedModel = DownloadedModel(package: package, files: ["model.gguf": fileURL])
-        let engine = StubInferenceEngine(result: LocalAIKitInferenceResult(text: #"{"name":"Ava","title":"Engineer","email":"ava@example.com"}"#))
-        let client = LocalAIKitClient(inferenceEngine: engine)
+        let engine = StubInferenceEngine(result: #"{"name":"Ava","title":"Engineer","email":"ava@example.com"}"#)
+        let client = LocalAIKitModelManager(inferenceEngine: engine)
         let agent = client.makeAgent(blueprint: LocalAIKitAgentBlueprintPreset.structuredExtractor.blueprint)
 
         let decoded = try await client.generateStructured(
@@ -296,21 +295,21 @@ final class LocalAIKitTests: XCTestCase {
 
     func testStructuredOutputErrorsProvideReadableDescriptions() {
         XCTAssertEqual(
-            LocalAIKitStructuredOutputError.emptyResponse.localizedDescription,
+            LocalAIKitInferenceError.structuredOutputEmpty.localizedDescription,
             "Structured output was empty."
         )
         XCTAssertEqual(
-            LocalAIKitStructuredOutputError.invalidJSONObject.localizedDescription,
+            LocalAIKitInferenceError.structuredOutputMissingJSON.localizedDescription,
             "Structured output did not contain valid JSON."
         )
         XCTAssertEqual(
-            LocalAIKitStructuredOutputError.decodingFailed(message: "Missing key").localizedDescription,
+            LocalAIKitInferenceError.structuredOutputDecodingFailed(message: "Missing key").localizedDescription,
             "Structured output could not be decoded: Missing key"
         )
     }
 
     func testStructuredOutputErrorDescriptionIncludesDecodingContext() {
-        let message = LocalAIKitStructuredOutputError.decodingFailed(
+        let message = LocalAIKitInferenceError.structuredOutputDecodingFailed(
             message: "Missing key 'name' at the top level: The data couldn’t be read because it isn’t in the correct format."
         ).localizedDescription
 
@@ -396,10 +395,10 @@ final class LocalAIKitTests: XCTestCase {
         let firstEnvelope = #"{"kind":"toolCall","tool":{"name":"get_current_time","arguments":{"timezone":"America/Chicago"}}}"#
         let secondEnvelope = #"{"kind":"final","response":"It is noon in Chicago."}"#
         let engine = SequenceInferenceEngine(results: [
-            LocalAIKitInferenceResult(text: firstEnvelope),
-            LocalAIKitInferenceResult(text: secondEnvelope)
+            firstEnvelope,
+            secondEnvelope
         ])
-        let client = LocalAIKitClient(inferenceEngine: engine)
+        let client = LocalAIKitModelManager(inferenceEngine: engine)
 
         let runResult = try await client.run(
             agent,
@@ -440,17 +439,17 @@ final class LocalAIKitTests: XCTestCase {
             }
 
         let engine = SequenceInferenceEngine(results: [
-            LocalAIKitInferenceResult(text: """
+            """
             The JSON must decode cleanly into the requested Swift type.
             ```json
             {
               "timezone": "America/Chicago"
             }
             ```
-            """),
-            LocalAIKitInferenceResult(text: #"{"kind":"final","response":"Done."}"#)
+            """,
+            #"{"kind":"final","response":"Done."}"#
         ])
-        let client = LocalAIKitClient(inferenceEngine: engine)
+        let client = LocalAIKitModelManager(inferenceEngine: engine)
 
         let runResult = try await client.run(
             agent,
@@ -477,8 +476,8 @@ final class LocalAIKitTests: XCTestCase {
         }
 
         let downloadedModel = DownloadedModel(package: package, files: ["model.gguf": fileURL])
-        let engine = StubInferenceEngine(result: LocalAIKitInferenceResult(text: "generated text"))
-        let client = LocalAIKitClient(inferenceEngine: engine)
+        let engine = StubInferenceEngine(result: "generated text")
+        let client = LocalAIKitModelManager(inferenceEngine: engine)
         let state = await LocalAIKitInferenceState(client: client, downloadedModel: downloadedModel)
 
         await state.generate(LocalAIKitInferenceRequest(prompt: "Write a sentence"))
@@ -486,49 +485,18 @@ final class LocalAIKitTests: XCTestCase {
         let modelStatus = await state.modelStatus
         let outputText = await state.outputText
         let statusMessage = await state.statusMessage
-        let result = await state.result
-
         XCTAssertEqual(modelStatus, .ready)
         XCTAssertEqual(outputText, "generated text")
         XCTAssertEqual(statusMessage, "Generation complete.")
-        XCTAssertEqual(result?.text, "generated text")
-    }
-
-    func testUnsupportedInferenceEngineStillThrowsWhenUsedDirectly() async throws {
-        let package = HuggingFaceModelPackage(
-            repository: HuggingFaceRepository(identifier: "org/model", revision: "main"),
-            assets: [HuggingFaceModelAsset(filename: "model.gguf")]
-        )
-        let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        try Data("model".utf8).write(to: fileURL)
-        defer {
-            try? FileManager.default.removeItem(at: fileURL)
-        }
-
-        let downloadedModel = DownloadedModel(package: package, files: ["model.gguf": fileURL])
-        let engine = UnsupportedLocalAIKitInferenceEngine()
-        let client = LocalAIKitClient(inferenceEngine: engine)
-
-        do {
-            _ = try await client.generate(
-                request: LocalAIKitInferenceRequest(prompt: "Hello"),
-                using: downloadedModel
-            )
-            XCTFail("Expected inference engine configuration error")
-        } catch LocalAIKitError.inferenceEngineNotConfigured {
-            XCTAssertTrue(true)
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
     }
 }
 
 private actor StubInferenceEngine: LocalAIKitInferenceEngine {
-    let result: LocalAIKitInferenceResult
+    let result: String
     private var receivedRequestStorage: LocalAIKitInferenceRequest?
     private var receivedModelStorage: LoadedModelContents?
 
-    init(result: LocalAIKitInferenceResult) {
+    init(result: String) {
         self.result = result
     }
 
@@ -536,10 +504,10 @@ private actor StubInferenceEngine: LocalAIKitInferenceEngine {
         request: LocalAIKitInferenceRequest,
         using model: LoadedModelContents,
         onPartialText: (@Sendable (String) -> Void)?
-    ) async throws -> LocalAIKitInferenceResult {
+    ) async throws -> String {
         receivedRequestStorage = request
         receivedModelStorage = model
-        onPartialText?(result.text)
+        onPartialText?(result)
         return result
     }
 
@@ -553,9 +521,9 @@ private actor StubInferenceEngine: LocalAIKitInferenceEngine {
 }
 
 private actor SequenceInferenceEngine: LocalAIKitInferenceEngine {
-    private var results: [LocalAIKitInferenceResult]
+    private var results: [String]
 
-    init(results: [LocalAIKitInferenceResult]) {
+    init(results: [String]) {
         self.results = results
     }
 
@@ -563,13 +531,13 @@ private actor SequenceInferenceEngine: LocalAIKitInferenceEngine {
         request: LocalAIKitInferenceRequest,
         using model: LoadedModelContents,
         onPartialText: (@Sendable (String) -> Void)?
-    ) async throws -> LocalAIKitInferenceResult {
+    ) async throws -> String {
         if results.isEmpty {
-            return LocalAIKitInferenceResult(text: #"{"kind":"final","response":"No more results."}"#)
+            return #"{"kind":"final","response":"No more results."}"#
         }
 
         let nextResult = results.removeFirst()
-        onPartialText?(nextResult.text)
+        onPartialText?(nextResult)
         return nextResult
     }
 }

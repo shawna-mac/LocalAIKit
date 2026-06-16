@@ -21,7 +21,7 @@ Create a client and point it at one or more Hugging Face model files:
 ```swift
 import LocalAIKit
 
-let client = LocalAIKitClient()
+let client = LocalAIKitModelManager()
 let package = HuggingFaceModelPackage(
     repository: HuggingFaceRepository(identifier: "ggml-org/gemma-3-1b-it-GGUF"),
     assets: [
@@ -29,19 +29,18 @@ let package = HuggingFaceModelPackage(
     ]
 )
 
-let model = try await client.prepareModel(package)
-print(model.primaryFileURL?.path ?? "missing")
+let loadedModel = try await client.load(package)
+print(loadedModel.primaryFileURL?.path ?? "missing")
 ```
 
 To get observable state that can drive a SwiftUI or other UI layer:
 
 ```swift
-let state = LocalAIKitLoadState(client: client)
-await state.load(package)
+let loadedModel = try await client.load(package)
 
-switch state.phase {
+switch client.modelStatus {
 case .ready:
-    print(state.loadedModel?.totalByteCount ?? 0)
+    print(client.loadedModel?.totalByteCount ?? 0)
 case .failed(let message):
     print(message)
 default:
@@ -54,7 +53,7 @@ Once you have a loaded model and an inference engine configured, you can generat
 ```swift
 let request = LocalAIKitInferenceRequest(prompt: "Write a haiku about local AI.")
 let result = try await client.generate(request, package: package)
-print(result.text)
+print(result)
 ```
 
 You can also define an agent blueprint to keep a reusable persona or workflow in one place:
@@ -87,17 +86,14 @@ let agent = Agent(title: "Time Agent")
 ### Core Types
 
 - ``LocalAIKitConfiguration``
-- ``LocalAIKitClient``
+- ``LocalAIKitModelManager``
 - ``HuggingFaceRepository``
 - ``HuggingFaceModelAsset``
 - ``HuggingFaceModelPackage``
 - ``DownloadedModel``
 - ``LoadedModelContents``
 - ``LocalAIKitModelStatus``
-- ``LocalAIKitLoadState``
 - ``LocalAIKitInferenceRequest``
-- ``LocalAIKitInferenceResult``
-- ``LocalAIKitInferencePhase``
 - ``LocalAIKitInferenceState``
 - ``LocalAIKitInferenceEngine``
 - ``LlamaCppInferenceEngine``

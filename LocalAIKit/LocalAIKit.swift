@@ -25,24 +25,6 @@ public struct LocalAIKitConfiguration: Sendable {
     }
 }
 
-public struct DownloadedModel: Sendable {
-    public let package: HuggingFaceModelPackage
-    public let files: [String: URL]
-
-    public init(package: HuggingFaceModelPackage, files: [String: URL]) {
-        self.package = package
-        self.files = files
-    }
-
-    public func url(for filename: String) -> URL? {
-        files[filename]
-    }
-
-    public var primaryFileURL: URL? {
-        package.assets.first.flatMap { files[$0.filename] }
-    }
-}
-
 public struct LoadedModelContents: Sendable {
     public let package: HuggingFaceModelPackage
     public let fileURLs: [String: URL]
@@ -72,98 +54,5 @@ public struct LoadedModelContents: Sendable {
 
     public var totalByteCount: Int {
         files.values.reduce(0) { $0 + $1.count }
-    }
-}
-
-public enum LocalAIKitModelStatus: Sendable {
-    case idle
-    case downloading
-    case loadingIntoMemory
-    case ready
-    case failed(error: Error)
-}
-
-@MainActor
-@Observable
-public final class LocalAIKitLoadState {
-    public private(set) var modelStatus: LocalAIKitModelStatus = .idle
-    public private(set) var downloadedModel: DownloadedModel?
-    public private(set) var loadedModel: LoadedModelContents?
-
-    private let client: LocalAIKitClient
-
-    public init(client: LocalAIKitClient = .init()) {
-        self.client = client
-    }
-
-    public var isBusy: Bool {
-        switch modelStatus {
-        case .downloading, .loadingIntoMemory:
-            return true
-        case .idle, .ready, .failed:
-            return false
-        }
-    }
-    
-    public var isReady: Bool {
-        if case .ready = modelStatus { return true }
-        return false
-    }
-
-    public var modelStatusText: String {
-        String(describing: modelStatus)
-    }
-
-    @available(*, deprecated, renamed: "modelStatus")
-    public var phase: LocalAIKitModelStatus {
-        modelStatus
-    }
-
-    @available(*, deprecated, renamed: "modelStatusText")
-    public var phaseText: String {
-        modelStatusText
-    }
-
-    public func reset() {
-        modelStatus = .idle
-        downloadedModel = nil
-        loadedModel = nil
-    }
-
-    public func load(
-        _ package: HuggingFaceModelPackage,
-        onProgress: (@Sendable (HuggingFaceModelDownloadProgress) async -> Void)? = nil
-    ) async {
-        reset()
-        modelStatus = .downloading
-
-        do {
-            let downloaded = try await client.prepareModel(package, onProgress: onProgress)
-            downloadedModel = downloaded
-
-            modelStatus = .loadingIntoMemory
-
-            loadedModel = try client.loadIntoMemory(downloaded)
-            modelStatus = .ready
-        } catch {
-            modelStatus = .failed(error: error)
-        }
-    }
-
-    public func load(downloadedModel: DownloadedModel) async {
-        reset()
-        self.downloadedModel = downloadedModel
-        modelStatus = .loadingIntoMemory
-
-        do {
-            loadedModel = try client.loadIntoMemory(downloadedModel)
-            modelStatus = .ready
-        } catch {
-            modelStatus = .failed(error: error)
-        }
-    }
-
-    private static func message(for error: Error) -> String {
-        localAIKitMessage(for: error)
     }
 }

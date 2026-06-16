@@ -6,13 +6,7 @@
 //
 
 import Foundation
-
-#if canImport(llama)
 import llama
-
-private func llamaBridgeLog(_ message: String) {
-    NSLog("%@", message)
-}
 
 public struct LlamaCppInferenceEngine: LocalAIKitInferenceEngine {
     public init() {}
@@ -21,7 +15,7 @@ public struct LlamaCppInferenceEngine: LocalAIKitInferenceEngine {
         request: LocalAIKitInferenceRequest,
         using model: LoadedModelContents,
         onPartialText: (@Sendable (String) -> Void)?
-    ) async throws -> LocalAIKitInferenceResult {
+    ) async throws -> String {
         guard let modelURL = model.primaryFileURL else {
             throw LocalAIKitInferenceError.missingPrimaryModelFile
         }
@@ -39,34 +33,34 @@ public struct LlamaCppInferenceEngine: LocalAIKitInferenceEngine {
         request: LocalAIKitInferenceRequest,
         modelURL: URL,
         onPartialText: (@Sendable (String) -> Void)?
-    ) throws -> LocalAIKitInferenceResult {
-        llamaBridgeLog("LlamaCppInferenceEngine: generate started")
+    ) throws -> String {
+        NSLog("LlamaCppInferenceEngine: generate started")
         llama_backend_init()
-        llamaBridgeLog("LlamaCppInferenceEngine: backend initialized")
+        NSLog("LlamaCppInferenceEngine: backend initialized")
 
         let prompt = composePrompt(request: request)
-        llamaBridgeLog("LlamaCppInferenceEngine: prompt composed (\(prompt.count) chars)")
+        NSLog("LlamaCppInferenceEngine: prompt composed (\(prompt.count) chars)")
 
         var modelParams = llama_model_default_params()
-        llamaBridgeLog("LlamaCppInferenceEngine: loading model at \(modelURL.path)")
+        NSLog("LlamaCppInferenceEngine: loading model at \(modelURL.path)")
         let modelPointer = modelURL.path.withCString { path in
             llama_model_load_from_file(path, modelParams)
         }
 
         guard let modelPointer else {
-            llamaBridgeLog("LlamaCppInferenceEngine: model load failed")
+            NSLog("LlamaCppInferenceEngine: model load failed")
             throw LocalAIKitInferenceError.modelLoadFailed(path: modelURL.path)
         }
         defer { llama_model_free(modelPointer) }
-        llamaBridgeLog("LlamaCppInferenceEngine: model loaded")
+        NSLog("LlamaCppInferenceEngine: model loaded")
 
         guard let vocab = llama_model_get_vocab(modelPointer) else {
-            llamaBridgeLog("LlamaCppInferenceEngine: vocab missing")
+            NSLog("LlamaCppInferenceEngine: vocab missing")
             throw LocalAIKitInferenceError.modelLoadFailed(path: modelURL.path)
         }
 
         let promptTokens = try tokenize(prompt, vocab: vocab)
-        llamaBridgeLog("LlamaCppInferenceEngine: tokenized prompt into \(promptTokens.count) tokens")
+        NSLog("LlamaCppInferenceEngine: tokenized prompt into \(promptTokens.count) tokens")
 
         var contextParams = llama_context_default_params()
         let contextBudget = max(promptTokens.count + request.maxTokens + 32, 256)
@@ -75,18 +69,17 @@ public struct LlamaCppInferenceEngine: LocalAIKitInferenceEngine {
         contextParams.n_ubatch = UInt32(max(promptTokens.count, 1))
         contextParams.n_threads = Int32(max(1, ProcessInfo.processInfo.activeProcessorCount - 1))
         contextParams.n_threads_batch = contextParams.n_threads
-        llamaBridgeLog("LlamaCppInferenceEngine: creating context with budget \(contextBudget)")
+        NSLog("LlamaCppInferenceEngine: creating context with budget \(contextBudget)")
 
         guard let contextPointer = llama_init_from_model(modelPointer, contextParams) else {
-            llamaBridgeLog("LlamaCppInferenceEngine: context creation failed")
+            NSLog("LlamaCppInferenceEngine: context creation failed")
             throw LocalAIKitInferenceError.contextCreationFailed
         }
         defer { llama_free(contextPointer) }
-        llamaBridgeLog("LlamaCppInferenceEngine: context created")
+        NSLog("LlamaCppInferenceEngine: context created")
 
         var generatedText = ""
         var completionTokenCount = 0
-        var finishReason: String?
         var lastPartialUpdate = CFAbsoluteTimeGetCurrent()
         let partialUpdateInterval: CFTimeInterval = 0.12
 
@@ -127,11 +120,11 @@ public struct LlamaCppInferenceEngine: LocalAIKitInferenceEngine {
         }
 
         if llama_model_has_encoder(modelPointer) {
-            llamaBridgeLog("LlamaCppInferenceEngine: model has encoder")
+            NSLog("LlamaCppInferenceEngine: model has encoder")
             var promptTokenBuffer = promptTokens
             let promptBatch = llama_batch_get_one(&promptTokenBuffer, Int32(promptTokenBuffer.count))
             if llama_encode(contextPointer, promptBatch) != 0 {
-                llamaBridgeLog("LlamaCppInferenceEngine: encode failed")
+                NSLog("LlamaCppInferenceEngine: encode failed")
                 throw LocalAIKitInferenceError.decodeFailed(code: -1)
             }
 
@@ -143,26 +136,25 @@ public struct LlamaCppInferenceEngine: LocalAIKitInferenceEngine {
             var decoderTokenBuffer = [decoderStartToken]
             let decoderBatch = llama_batch_get_one(&decoderTokenBuffer, 1)
             if llama_decode(contextPointer, decoderBatch) != 0 {
-                llamaBridgeLog("LlamaCppInferenceEngine: decoder priming failed")
+                NSLog("LlamaCppInferenceEngine: decoder priming failed")
                 throw LocalAIKitInferenceError.decodeFailed(code: -1)
             }
         } else {
-            llamaBridgeLog("LlamaCppInferenceEngine: decoding prompt")
+            NSLog("LlamaCppInferenceEngine: decoding prompt")
             var promptTokenBuffer = promptTokens
             let promptBatch = llama_batch_get_one(&promptTokenBuffer, Int32(promptTokenBuffer.count))
             if llama_decode(contextPointer, promptBatch) != 0 {
-                llamaBridgeLog("LlamaCppInferenceEngine: prompt decode failed")
+                NSLog("LlamaCppInferenceEngine: prompt decode failed")
                 throw LocalAIKitInferenceError.decodeFailed(code: -1)
             }
         }
 
-        llamaBridgeLog("LlamaCppInferenceEngine: entering generation loop")
+        NSLog("LlamaCppInferenceEngine: entering generation loop")
 
         while completionTokenCount < request.maxTokens {
             let nextToken = llama_sampler_sample(sampler, contextPointer, -1)
 
             if nextToken == LLAMA_TOKEN_NULL || llama_vocab_is_eog(vocab, nextToken) {
-                finishReason = "eog"
                 break
             }
 
@@ -181,34 +173,24 @@ public struct LlamaCppInferenceEngine: LocalAIKitInferenceEngine {
                 if generatedText.hasSuffix(stop) {
                     generatedText.removeLast(stop.count)
                 }
-                finishReason = "stop"
                 break
             }
 
             var nextTokenBuffer = [nextToken]
             let batch = llama_batch_get_one(&nextTokenBuffer, 1)
             if llama_decode(contextPointer, batch) != 0 {
-                llamaBridgeLog("LlamaCppInferenceEngine: token decode failed")
+                NSLog("LlamaCppInferenceEngine: token decode failed")
                 throw LocalAIKitInferenceError.decodeFailed(code: -3)
             }
         }
 
         onPartialText?(generatedText)
 
-        llamaBridgeLog("LlamaCppInferenceEngine: generation loop finished")
+        NSLog("LlamaCppInferenceEngine: generation loop finished")
 
-        let usage = LocalAIKitInferenceUsage(
-            promptTokens: promptTokens.count,
-            completionTokens: completionTokenCount
-        )
+        NSLog("LlamaCppInferenceEngine: returning result")
 
-        llamaBridgeLog("LlamaCppInferenceEngine: returning result")
-
-        return LocalAIKitInferenceResult(
-            text: generatedText,
-            usage: usage,
-            finishReason: finishReason
-        )
+        return generatedText
     }
 
     private static func composePrompt(request: LocalAIKitInferenceRequest) -> String {
@@ -280,16 +262,3 @@ public struct LlamaCppInferenceEngine: LocalAIKitInferenceEngine {
             .max(by: { $0.count < $1.count })
     }
 }
-#else
-public struct LlamaCppInferenceEngine: LocalAIKitInferenceEngine {
-    public init() {}
-
-    public func generate(
-        request: LocalAIKitInferenceRequest,
-        using model: LoadedModelContents,
-        onPartialText: (@Sendable (String) -> Void)?
-    ) async throws -> LocalAIKitInferenceResult {
-        throw LocalAIKitError.inferenceEngineNotConfigured
-    }
-}
-#endif

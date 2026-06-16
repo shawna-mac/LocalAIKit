@@ -53,7 +53,6 @@ final class DemoAppModel {
     var statusText: String = "Enter a model and download it to begin."
     var inferencePhaseText: String = "idle"
     var outputText: String = ""
-    var isWorking: Bool = false
     var generationStatusText: String = "Idle"
     var structuredPromptText: String = "Extract a contact card with exactly these fields: name, title, and email. My name is Taylor Chen, I work at LocalAIKit Labs as a product engineer, and my email is taylor@localaikit.dev."
     var structuredStatusText: String = "Idle"
@@ -68,27 +67,26 @@ final class DemoAppModel {
         ChatMessage(role: .assistant, text: "Enter a Hugging Face model, download it, and then chat here.")
     ]
 
-    private let client: LocalAIKitClient
-    private var loadState: LocalAIKitLoadState
+    private let client: LocalAIKitModelManager
     private let downloadManager: LocalAIKitDownloadManager
-    private var loadedModel: LoadedModelContents?
 
     init() {
-        let client = LocalAIKitClient()
+        let client = LocalAIKitModelManager()
         self.client = client
-        self.loadState = LocalAIKitLoadState(client: client)
         self.downloadManager = .shared
         applySelectedBlueprint()
     }
 
     var canChat: Bool {
-        loadedModel != nil && !isWorking
+        loadedModel != nil && modelStatus != .generating
     }
 
     var canDownloadModel: Bool {
         !modelRepository.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
         !modelFilename.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-        !isWorking
+        modelStatus != .downloading &&
+        modelStatus != .loadingIntoMemory &&
+        modelStatus != .generating
     }
 
     var canQueueDownload: Bool {
@@ -96,21 +94,14 @@ final class DemoAppModel {
         !modelFilename.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    var modelStatusText: String { loadState.modelStatusText }
+    var modelStatus: LocalAIKitModelStatus { client.modelStatus }
+
+    var loadedModel: LoadedModelContents? { client.loadedModel }
+
+    var modelStatusText: String { client.modelStatusText }
 
     var loadStatusText: String {
-        switch loadState.modelStatus {
-        case .idle:
-            return "Idle"
-        case .downloading:
-            return "Downloading model files..."
-        case .loadingIntoMemory:
-            return "Loading model files into memory..."
-        case .ready:
-            return "Model ready."
-        case .failed(let error):
-            return error.localizedDescription
-        }
+        client.statusMessage ?? client.modelStatusText
     }
 
     var modelSummary: String {
@@ -168,31 +159,24 @@ final class DemoAppModel {
 
     func downloadAndLoadModel() async {
         NSLog("LocalAIKitDemoApp: downloadAndLoadModel started")
-        isWorking = true
         outputText = ""
         statusText = "Preparing model..."
         inferencePhaseText = "idle"
         generationStatusText = "Idle"
 
-        defer {
-            isWorking = false
-        }
-
         do {
             let package = try makePackage()
-            await loadState.load(package) { progress in
+            _ = try await client.load(package) { progress in
                 let percent = Int((progress.fractionCompleted * 100).rounded())
                 Task { @MainActor [percent] in
                     self.statusText = "Downloading \(percent)%..."
                 }
             }
-            guard let loaded = loadState.loadedModel, loadState.isReady else {
-                loadedModel = nil
+            guard let loaded = loadedModel, modelStatus == .ready else {
                 statusText = loadStatusText
                 return
             }
 
-            loadedModel = loaded
             statusText = "Model loaded. You can chat now."
             inputText = selectedBlueprint.blueprint.starterPrompt
             structuredPromptText = structuredBlueprint.blueprint.starterPrompt
@@ -213,6 +197,11 @@ final class DemoAppModel {
         }
     }
 
+    func runSelectedBlueprint() async {
+        inputText = selectedBlueprint.blueprint.starterPrompt
+        await sendMessage()
+    }
+
     func sendMessage() async {
         NSLog("LocalAIKitDemoApp: sendMessage started")
         let trimmedInput = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -227,14 +216,9 @@ final class DemoAppModel {
             return
         }
 
-        isWorking = true
         outputText = "Generating response..."
         inferencePhaseText = "generating"
         generationStatusText = "Generating response..."
-
-        defer {
-            isWorking = false
-        }
 
         chatMessages.append(.init(role: .user, text: trimmedInput))
         let assistantMessageID = UUID()
@@ -290,11 +274,6 @@ final class DemoAppModel {
             structuredResultText = structuredStatusText
             structuredOutputJSONText = ""
             return
-        }
-
-        isWorking = true
-        defer {
-            isWorking = false
         }
 
         structuredStatusText = "Generating structured output..."
@@ -355,11 +334,6 @@ final class DemoAppModel {
             toolOutputText = ""
             toolObservationsText = toolStatusText
             return
-        }
-
-        isWorking = true
-        defer {
-            isWorking = false
         }
 
         toolStatusText = "Running tool agent..."

@@ -9,11 +9,14 @@ struct LocalAIKitCLI {
             let prompt = readPrompt(from: arguments) ?? "Hello!"
             let shouldRunStructuredDemo = arguments.contains("--structured")
 
-            let client = LocalAIKitClient()
+            let client = LocalAIKitModelManager()
             let package = defaultPackage()
 
             print("Downloading model...")
-            let loadedModel = try await client.loadModel(package)
+            let loadedModel = try await client.load(package)
+            guard client.modelStatus == .ready else {
+                throw LocalAIKitError.modelLoadFailed(path: "unknown")
+            }
             print("Model loaded from: \(loadedModel.primaryFileURL?.path ?? "unknown")")
 
             let request = LocalAIKitInferenceRequest(
@@ -33,7 +36,7 @@ struct LocalAIKitCLI {
 
             print("")
             print("Reply:")
-            print(result.text.trimmingCharacters(in: .whitespacesAndNewlines))
+            print(result.trimmingCharacters(in: .whitespacesAndNewlines))
 
             if shouldRunStructuredDemo {
                 print("")
