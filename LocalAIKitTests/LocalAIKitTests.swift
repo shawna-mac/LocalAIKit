@@ -24,6 +24,36 @@ final class LocalAIKitTests: XCTestCase {
         )
     }
 
+    func testModelStoreDeletesDownloadedModelFromDisk() throws {
+        let store = HuggingFaceModelStore(cacheRoot: FileManager.default.temporaryDirectory)
+        let package = HuggingFaceModelPackage(
+            repository: HuggingFaceRepository(identifier: "org/model", revision: "main"),
+            assets: [HuggingFaceModelAsset(filename: "model.gguf")]
+        )
+
+        try store.preparePackageDirectory(for: package)
+        let fileURL = store.destinationURL(for: package, asset: package.assets[0])
+        try Data("hello llama".utf8).write(to: fileURL)
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.deletingLastPathComponent().path))
+
+        try store.deleteDownloadedModel(for: package)
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: fileURL.deletingLastPathComponent().path))
+    }
+
+    func testDeleteModelThrowsWhenDownloadIsMissing() {
+        let manager = LocalAIKitDownloadManager()
+
+        XCTAssertThrowsError(try manager.deleteModel(id: "missing-download")) { error in
+            guard case LocalAIKitError.downloadNotFound(let id) = error else {
+                return XCTFail("Expected downloadNotFound, got \(error)")
+            }
+
+            XCTAssertEqual(id, "missing-download")
+        }
+    }
+
     func testDownloadedModelReturnsMatchingURL() {
         let package = HuggingFaceModelPackage(
             repository: HuggingFaceRepository(identifier: "org/model", revision: "main"),

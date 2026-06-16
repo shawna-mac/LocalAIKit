@@ -14,9 +14,11 @@ public enum LocalAIKitError: Error, Equatable, Sendable {
     case missingModelFilename
     case invalidHTTPStatus(code: Int)
     case unableToCreateDirectory(URL)
+    case unableToDeleteDirectory(URL)
     case checksumMismatch(expected: String, actual: String)
     case modelDownloadIncomplete(filename: String)
     case modelDownloadFailed(message: String)
+    case downloadNotFound(id: String)
     case missingBackgroundDownloadState
     case inferenceEngineNotConfigured
     case noLoadedModel
@@ -37,12 +39,16 @@ func localAIKitMessage(for error: Error) -> String {
             return "The download failed with HTTP status code \(code)."
         case .unableToCreateDirectory(let url):
             return "Unable to create a cache directory at \(url.path)."
+        case .unableToDeleteDirectory(let url):
+            return "Unable to delete the cache directory at \(url.path)."
         case .checksumMismatch(let expected, let actual):
             return "Checksum mismatch. Expected \(expected), got \(actual)."
         case .modelDownloadIncomplete(let filename):
             return "The model file \(filename) has not finished downloading."
         case .modelDownloadFailed(let message):
             return message
+        case .downloadNotFound(let id):
+            return "The download with identifier \(id) does not exist."
         case .missingBackgroundDownloadState:
             return "The background download state could not be restored."
         case .inferenceEngineNotConfigured:

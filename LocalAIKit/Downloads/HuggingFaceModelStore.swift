@@ -55,6 +55,23 @@ public final class HuggingFaceModelStore: @unchecked Sendable {
         try createDirectoryIfNeeded(at: packageDirectory(for: package))
     }
 
+    /// Deletes the cached files for the supplied package from disk.
+    ///
+    /// - Parameters:
+    ///   - package: The Hugging Face model package whose cached files should be removed.
+    public func deleteDownloadedModel(for package: HuggingFaceModelPackage) throws {
+        let directory = packageDirectory(for: package)
+        guard fileExists(at: directory) else {
+            return
+        }
+
+        do {
+            try fileManager.removeItem(at: directory)
+        } catch {
+            throw LocalAIKitError.unableToDeleteDirectory(directory)
+        }
+    }
+
     internal func cachedAssetIsReady(for package: HuggingFaceModelPackage, asset: HuggingFaceModelAsset) -> Bool {
         let destinationURL = destinationURL(for: package, asset: asset)
         guard fileExists(at: destinationURL) else {

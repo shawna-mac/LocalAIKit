@@ -16,7 +16,48 @@ public final class LocalAIKitDownloadManager {
     public static let shared = LocalAIKitDownloadManager()
 
     /// The current downloads known to the manager, ordered by insertion and updated as progress changes.
-    public private(set) var downloads: [LocalAIKitModelDownload] = []
+    private var downloads: [LocalAIKitModelDownload] = []
+
+    /// The downloads that are still queued or actively downloading.
+    public var activeDownloads: [LocalAIKitModelDownload] {
+        downloads.filter { item in
+            switch item.downloadStatus {
+            case .queued, .downloading:
+                return true
+            case .finished, .failed, .cancelled:
+                return false
+            }
+        }
+    }
+
+    /// The downloads that completed successfully and are ready to load from disk.
+    public var completedDownloads: [LocalAIKitModelDownload] {
+        downloads.filter { item in
+            if case .finished = item.downloadStatus {
+                return true
+            }
+
+            return false
+        }
+    }
+
+    /// Returns the download status for the download with the specified identifier.
+    ///
+    /// - Parameters:
+    ///   - id: The identifier of the download to inspect.
+    /// - Returns: The download status if the download exists, or `nil` if the identifier is unknown.
+    public func downloadStatus(for id: String) -> LocalAIKitDownloadStatus? {
+        downloads.first(where: { $0.id == id })?.downloadStatus
+    }
+
+    /// Returns the tracked download record for the specified identifier.
+    ///
+    /// - Parameters:
+    ///   - id: The identifier of the download to inspect.
+    /// - Returns: The tracked download if it exists, or `nil` if the identifier is unknown.
+    public func download(for id: String) -> LocalAIKitModelDownload? {
+        downloads.first(where: { $0.id == id })
+    }
 
     private let modelStore: HuggingFaceModelStore
     private let sessionIdentifier: String
@@ -152,13 +193,19 @@ public final class LocalAIKitDownloadManager {
         persistDownloads()
     }
 
-    /// Removes the download record and unregisters its package metadata.
+    /// Deletes the cached model files for the download with the specified identifier and removes its queue record.
     ///
     /// - Parameters:
-    ///   - id: The download identifier to remove from the observable queue.
-    public func remove(id: String) {
+    ///   - id: The download identifier whose cached files should be deleted from disk.
+    /// - Throws: `LocalAIKitError.downloadNotFound` if the identifier is unknown, or `LocalAIKitError.unableToDeleteDirectory` if the cache directory could not be removed.
+    public func deleteModel(id: String) throws {
+        guard let download = download(for: id) else {
+            throw LocalAIKitError.downloadNotFound(id: id)
+        }
+
         cancelBackgroundTasks(for: id)
         assetProgressByDownloadID[id] = nil
+        try modelStore.deleteDownloadedModel(for: download.package)
         packageRegistry.unregister(downloadID: id)
         downloads.removeAll { $0.id == id }
         persistDownloads()
@@ -203,96 +250,6 @@ public final class LocalAIKitDownloadManager {
         }
 
         backgroundEventsCompletionHandler = completionHandler
-    }
-
-    private func startBackgroundDownloads(package: HuggingFaceModelPackage, id: String) {
-        var anyTaskStarted = false
-
-        do {
-            try modelStore.preparePackageDirectory(for: package)
-        } catch {
-            markDownloadFailed(id: id, message: localAIKitMessage(for: error))
-            return
-        }
-
-        for (assetIndex, asset) in package.assets.enumerated() {
-            if modelStore.cachedAssetIsReady(for: package, asset: asset) {
-                markAssetComplete(downloadID: id, assetIndex: assetIndex, package: package)
-                continue
-            }
-
-            do {
-                let request = try modelStore.makeDownloadRequest(for: package, asset: asset)
-                let task = session.downloadTask(with: request)
-                task.taskDescription = Self.encodeTaskMetadata(
-                    LocalAIKitBackgroundDownloadTaskMetadata(
-                        downloadID: id,
-                        assetIndex: assetIndex
-                    )
-                )
-                task.resume()
-                anyTaskStarted = true
-            } catch {
-                markDownloadFailed(id: id, message: localAIKitMessage(for: error))
-                return
-            }
-        }
-
-        if anyTaskStarted {
-            update(id: id) { item in
-                item.updateStatus(.downloading)
-            }
-        } else {
-            markDownloadFinished(id: id)
-        }
-
-        persistDownloads()
-    }
-
-    private func reportProgress(
-        _ download: LocalAIKitModelDownload,
-        onProgress: (@Sendable (HuggingFaceModelDownloadProgress) async -> Void)?
-    ) async {
-        guard let onProgress, !download.package.assets.isEmpty else {
-            return
-        }
-
-        let assetCount = download.package.assets.count
-        let fractionCompleted = max(0, min(1, download.fractionCompleted))
-        let completedAssets = min(assetCount, Int((fractionCompleted * Double(assetCount)).rounded(.down)))
-        let assetIndex = min(completedAssets, assetCount - 1)
-
-        await onProgress(
-            HuggingFaceModelDownloadProgress(
-                package: download.package,
-                asset: download.package.assets[assetIndex],
-                assetIndex: assetIndex,
-                assetCount: assetCount,
-                bytesReceived: Int64((fractionCompleted * 1_000).rounded()),
-                bytesExpected: 1_000,
-                completedAssets: completedAssets,
-                fractionCompleted: fractionCompleted
-            )
-        )
-    }
-
-    private func markAssetComplete(
-        downloadID: String,
-        assetIndex: Int,
-        package: HuggingFaceModelPackage
-    ) {
-        var progress = assetProgressByDownloadID[downloadID, default: [:]]
-        progress[assetIndex] = 1
-        assetProgressByDownloadID[downloadID] = progress
-
-        update(id: downloadID) { item in
-            item.updateStatus(.downloading)
-            item.fractionCompleted = aggregateFraction(for: item.id, assetCount: item.package.assets.count)
-        }
-
-        if isDownloadComplete(downloadID: downloadID, package: package) {
-            markDownloadFinished(id: downloadID)
-        }
     }
 
     func handleProgress(
@@ -391,8 +348,101 @@ public final class LocalAIKitDownloadManager {
 
         persistDownloads()
     }
+}
 
-    private func cancelBackgroundTasks(for downloadID: String) {
+// MARK: Private LocalAIKitDownloadManager
+private extension LocalAIKitDownloadManager {
+    func startBackgroundDownloads(package: HuggingFaceModelPackage, id: String) {
+        var anyTaskStarted = false
+
+        do {
+            try modelStore.preparePackageDirectory(for: package)
+        } catch {
+            markDownloadFailed(id: id, message: localAIKitMessage(for: error))
+            return
+        }
+
+        for (assetIndex, asset) in package.assets.enumerated() {
+            if modelStore.cachedAssetIsReady(for: package, asset: asset) {
+                markAssetComplete(downloadID: id, assetIndex: assetIndex, package: package)
+                continue
+            }
+
+            do {
+                let request = try modelStore.makeDownloadRequest(for: package, asset: asset)
+                let task = session.downloadTask(with: request)
+                task.taskDescription = Self.encodeTaskMetadata(
+                    LocalAIKitBackgroundDownloadTaskMetadata(
+                        downloadID: id,
+                        assetIndex: assetIndex
+                    )
+                )
+                task.resume()
+                anyTaskStarted = true
+            } catch {
+                markDownloadFailed(id: id, message: localAIKitMessage(for: error))
+                return
+            }
+        }
+
+        if anyTaskStarted {
+            update(id: id) { item in
+                item.updateStatus(.downloading)
+            }
+        } else {
+            markDownloadFinished(id: id)
+        }
+
+        persistDownloads()
+    }
+
+    func reportProgress(
+        _ download: LocalAIKitModelDownload,
+        onProgress: (@Sendable (HuggingFaceModelDownloadProgress) async -> Void)?
+    ) async {
+        guard let onProgress, !download.package.assets.isEmpty else {
+            return
+        }
+
+        let assetCount = download.package.assets.count
+        let fractionCompleted = max(0, min(1, download.fractionCompleted))
+        let completedAssets = min(assetCount, Int((fractionCompleted * Double(assetCount)).rounded(.down)))
+        let assetIndex = min(completedAssets, assetCount - 1)
+
+        await onProgress(
+            HuggingFaceModelDownloadProgress(
+                package: download.package,
+                asset: download.package.assets[assetIndex],
+                assetIndex: assetIndex,
+                assetCount: assetCount,
+                bytesReceived: Int64((fractionCompleted * 1_000).rounded()),
+                bytesExpected: 1_000,
+                completedAssets: completedAssets,
+                fractionCompleted: fractionCompleted
+            )
+        )
+    }
+
+    func markAssetComplete(
+        downloadID: String,
+        assetIndex: Int,
+        package: HuggingFaceModelPackage
+    ) {
+        var progress = assetProgressByDownloadID[downloadID, default: [:]]
+        progress[assetIndex] = 1
+        assetProgressByDownloadID[downloadID] = progress
+
+        update(id: downloadID) { item in
+            item.updateStatus(.downloading)
+            item.fractionCompleted = aggregateFraction(for: item.id, assetCount: item.package.assets.count)
+        }
+
+        if isDownloadComplete(downloadID: downloadID, package: package) {
+            markDownloadFinished(id: downloadID)
+        }
+    }
+    
+    func cancelBackgroundTasks(for downloadID: String) {
         Task { [session] in
             let tasks = await Self.allTasks(in: session)
             for task in tasks {
@@ -404,7 +454,7 @@ public final class LocalAIKitDownloadManager {
         }
     }
 
-    private func isDownloadComplete(downloadID: String, package: HuggingFaceModelPackage) -> Bool {
+    func isDownloadComplete(downloadID: String, package: HuggingFaceModelPackage) -> Bool {
         let progress = assetProgressByDownloadID[downloadID] ?? [:]
         guard !package.assets.isEmpty else {
             return true
@@ -415,7 +465,7 @@ public final class LocalAIKitDownloadManager {
         }
     }
 
-    private func aggregateFraction(for downloadID: String, assetCount: Int) -> Double {
+    func aggregateFraction(for downloadID: String, assetCount: Int) -> Double {
         guard assetCount > 0 else {
             return 1
         }
@@ -427,7 +477,7 @@ public final class LocalAIKitDownloadManager {
         return min(max(total / Double(assetCount), 0), 1)
     }
 
-    private func markDownloadFinished(id: String) {
+    func markDownloadFinished(id: String) {
         update(id: id) { item in
             item.updateStatus(.finished)
             item.fractionCompleted = 1
@@ -435,7 +485,7 @@ public final class LocalAIKitDownloadManager {
         persistDownloads()
     }
 
-    private func markDownloadCancelled(id: String) {
+    func markDownloadCancelled(id: String) {
         assetProgressByDownloadID[id] = nil
         update(id: id) { item in
             item.updateStatus(.cancelled)
@@ -443,7 +493,7 @@ public final class LocalAIKitDownloadManager {
         persistDownloads()
     }
 
-    private func markDownloadFailed(id: String, message: String) {
+    func markDownloadFailed(id: String, message: String) {
         assetProgressByDownloadID[id] = nil
         update(id: id) { item in
             item.updateStatus(.failed(message: message))
@@ -451,7 +501,7 @@ public final class LocalAIKitDownloadManager {
         persistDownloads()
     }
 
-    private func rebuildAssetProgress() {
+    func rebuildAssetProgress() {
         assetProgressByDownloadID = downloads.reduce(into: [:]) { partialResult, download in
             partialResult[download.id] = [:]
             if case .finished = download.downloadStatus {
@@ -462,7 +512,7 @@ public final class LocalAIKitDownloadManager {
         }
     }
 
-    private func upsert(_ item: LocalAIKitModelDownload) {
+    func upsert(_ item: LocalAIKitModelDownload) {
         if let index = downloads.firstIndex(where: { $0.id == item.id }) {
             downloads[index] = item
         } else {
@@ -470,7 +520,7 @@ public final class LocalAIKitDownloadManager {
         }
     }
 
-    private func update(id: String, _ mutate: (inout LocalAIKitModelDownload) -> Void) {
+    func update(id: String, _ mutate: (inout LocalAIKitModelDownload) -> Void) {
         guard let index = downloads.firstIndex(where: { $0.id == id }) else {
             return
         }
@@ -480,7 +530,7 @@ public final class LocalAIKitDownloadManager {
         downloads[index] = item
     }
 
-    private func persistDownloads() {
+    func persistDownloads() {
         do {
             try FileManager.default.createDirectory(
                 at: storeURL.deletingLastPathComponent(),
@@ -495,7 +545,7 @@ public final class LocalAIKitDownloadManager {
         }
     }
 
-    private static func loadManifest(from url: URL) -> LocalAIKitDownloadManifest? {
+    static func loadManifest(from url: URL) -> LocalAIKitDownloadManifest? {
         guard let data = try? Data(contentsOf: url) else {
             return nil
         }
@@ -503,19 +553,19 @@ public final class LocalAIKitDownloadManager {
         return try? JSONDecoder().decode(LocalAIKitDownloadManifest.self, from: data)
     }
 
-    private static func defaultSessionIdentifier(bundleIdentifier: String?) -> String {
+    static func defaultSessionIdentifier(bundleIdentifier: String?) -> String {
         let base = bundleIdentifier?.trimmingCharacters(in: .whitespacesAndNewlines)
         return base.map { "\($0).LocalAIKit.background-downloads" } ?? "LocalAIKit.background-downloads"
     }
 
-    private static func encodeTaskMetadata(_ metadata: LocalAIKitBackgroundDownloadTaskMetadata) -> String? {
+    static func encodeTaskMetadata(_ metadata: LocalAIKitBackgroundDownloadTaskMetadata) -> String? {
         guard let data = try? JSONEncoder().encode(metadata) else {
             return nil
         }
         return String(data: data, encoding: .utf8)
     }
 
-    private static func metadata(from taskDescription: String?) -> LocalAIKitBackgroundDownloadTaskMetadata? {
+    static func metadata(from taskDescription: String?) -> LocalAIKitBackgroundDownloadTaskMetadata? {
         guard
             let taskDescription,
             let data = taskDescription.data(using: .utf8)
@@ -526,7 +576,7 @@ public final class LocalAIKitDownloadManager {
         return try? JSONDecoder().decode(LocalAIKitBackgroundDownloadTaskMetadata.self, from: data)
     }
 
-    private static func allTasks(in session: URLSession) async -> [URLSessionTask] {
+    static func allTasks(in session: URLSession) async -> [URLSessionTask] {
         await withCheckedContinuation { continuation in
             session.getAllTasks { tasks in
                 continuation.resume(returning: tasks)
@@ -536,6 +586,7 @@ public final class LocalAIKitDownloadManager {
 }
 
 
+// MARK: LocalAIKitBackgroundDownloadPackageRegistry
 final class LocalAIKitBackgroundDownloadPackageRegistry: @unchecked Sendable {
     private let lock = NSLock()
     private var packagesByDownloadID: [String: HuggingFaceModelPackage] = [:]

@@ -123,8 +123,12 @@ final class DemoAppModel {
         structuredBlueprint.summary
     }
 
-    var downloads: [LocalAIKitModelDownload] {
-        downloadManager.downloads
+    var activeDownloads: [LocalAIKitModelDownload] {
+        downloadManager.activeDownloads
+    }
+
+    var completedDownloads: [LocalAIKitModelDownload] {
+        downloadManager.completedDownloads
     }
 
     var latestAssistantReplyText: String {
@@ -210,9 +214,9 @@ final class DemoAppModel {
             return
         }
 
-        chatMessages.append(.init(role: .user, text: trimmedInput))
+        chatMessages.append(ChatMessage(role: .user, text: trimmedInput))
         let assistantMessageID = UUID()
-        chatMessages.append(.init(role: .assistant, text: "Generating response..."))
+        chatMessages.append(ChatMessage(role: .assistant, text: "Generating response..."))
         inputText = ""
 
         statusText = "Generating response..."
@@ -225,7 +229,7 @@ final class DemoAppModel {
                 history: conversationTurns,
                 overrideSystemPrompt: systemPrompt,
                 onPartialText: { [weak self] partialText in
-                    Task { @MainActor in
+                    Task { @MainActor [weak self, assistantMessageID] in
                         guard let self else { return }
                         self.updateAssistantMessage(id: assistantMessageID, text: partialText.isEmpty ? "Generating response..." : partialText)
                     }

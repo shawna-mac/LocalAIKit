@@ -49,9 +49,22 @@
 		0AE44E522FD7B6400032DB82 /* LocalAIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = LocalAIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0AE44E7D2FE1A7E30032DB82 /* Exceptions for "LocalAIAppKitDemo" folder in "LocalAIAppKitDemo" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 0AE44E172FD7B5F20032DB82 /* LocalAIAppKitDemo */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0AE44E1A2FD7B5F20032DB82 /* LocalAIAppKitDemo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0AE44E7D2FE1A7E30032DB82 /* Exceptions for "LocalAIAppKitDemo" folder in "LocalAIAppKitDemo" target */,
+			);
 			path = LocalAIAppKitDemo;
 			sourceTree = "<group>";
 		};
@@ -426,6 +439,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LocalAIAppKitDemo/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -469,6 +483,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LocalAIAppKitDemo/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

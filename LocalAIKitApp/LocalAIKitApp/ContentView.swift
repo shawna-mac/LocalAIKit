@@ -67,40 +67,64 @@ struct ContentView: View {
 
     @ViewBuilder
     private func downloadsSection(_ model: DemoAppModel) -> some View {
-        GroupBox("Queued Downloads") {
+        GroupBox("Downloads") {
             VStack(alignment: .leading, spacing: 12) {
-                if model.downloads.isEmpty {
-                    Text("No queued downloads yet.")
-                        .foregroundStyle(.secondary)
-                } else {
-                    ForEach(model.downloads) { download in
-                        VStack(alignment: .leading, spacing: 6) {
-                            HStack {
-                                Text(download.displayName)
-                                    .font(.headline)
-                                Spacer()
-                                Text("\(download.progressPercentage)%")
-                                    .foregroundStyle(.secondary)
-                            }
-
-                            ProgressView(value: download.fractionCompleted)
-
-                            HStack {
-                                Text(download.statusText)
-                                    .foregroundStyle(.secondary)
-                                Spacer()
-                                if case .finished = download.downloadStatus {
-                                    Text("Complete")
-                                        .foregroundStyle(.green)
-                                }
+                GroupBox("Active") {
+                    VStack(alignment: .leading, spacing: 12) {
+                        if model.activeDownloads.isEmpty {
+                            Text("No active downloads.")
+                                .foregroundStyle(.secondary)
+                        } else {
+                            ForEach(model.activeDownloads) { download in
+                                downloadRow(download)
                             }
                         }
-                        .padding(.vertical, 4)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                GroupBox("Completed") {
+                    VStack(alignment: .leading, spacing: 12) {
+                        if model.completedDownloads.isEmpty {
+                            Text("No completed downloads yet.")
+                                .foregroundStyle(.secondary)
+                        } else {
+                            ForEach(model.completedDownloads) { download in
+                                downloadRow(download)
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+    }
+
+    @ViewBuilder
+    private func downloadRow(_ download: LocalAIKitModelDownload) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(download.displayName)
+                    .font(.headline)
+                Spacer()
+                Text("\(download.progressPercentage)%")
+                    .foregroundStyle(.secondary)
+            }
+
+            ProgressView(value: download.fractionCompleted)
+
+            HStack {
+                Text(download.statusText)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                if case .finished = download.downloadStatus {
+                    Text("Complete")
+                        .foregroundStyle(.green)
+                }
+            }
+        }
+        .padding(.vertical, 4)
     }
 
     @ViewBuilder
