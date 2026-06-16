@@ -7,7 +7,15 @@
 
 import Foundation
 
+/// A pluggable inference backend that turns a loaded model and request into generated text.
 public protocol LocalAIKitInferenceEngine: Sendable {
+    /// Generates text for the supplied request and loaded model.
+    ///
+    /// - Parameters:
+    ///   - request: The inference request to execute.
+    ///   - model: The loaded model contents to generate from.
+    ///   - onPartialText: Optional callback that receives incremental text updates while generation is in progress.
+    /// - Returns: The final generated text.
     func generate(
         request: LocalAIKitInferenceRequest,
         using model: LoadedModelContents,
@@ -15,23 +23,40 @@ public protocol LocalAIKitInferenceEngine: Sendable {
     ) async throws -> String
 }
 
+/// Creates the default inference engine used by LocalAIKit when no custom engine is supplied.
 public enum LocalAIKitInferenceEngineFactory {
+    /// Returns the default inference engine for the current platform and build configuration.
+    ///
+    /// - Returns: The default `LocalAIKitInferenceEngine` implementation.
     public static func makeDefault() -> any LocalAIKitInferenceEngine {
         return LlamaCppInferenceEngine()
     }
 }
 
+/// Owns model downloads, model loading, and generation state for a LocalAIKit session.
 @Observable
 public final class LocalAIKitModelManager: @unchecked Sendable {
+    /// The configuration used to resolve model storage locations and related settings.
     public let configuration: LocalAIKitConfiguration
+    /// The cache and request builder used to resolve Hugging Face model assets.
     public let modelStore: HuggingFaceModelStore
+    /// The inference engine used to generate text from loaded model contents.
     public let inferenceEngine: any LocalAIKitInferenceEngine
+    /// The current model lifecycle status.
     public private(set) var modelStatus: LocalAIKitModelStatus = .idle
+    /// The most recently loaded model contents, if loading succeeded.
     public private(set) var loadedModel: LoadedModelContents?
+    /// The most recent inference request, if a generation is in progress or just completed.
     public private(set) var request: LocalAIKitInferenceRequest?
+    /// The latest generated text snapshot produced by the current manager session.
     public private(set) var outputText: String = ""
-    public private(set) var statusMessage: String?
 
+    /// Creates a model manager with optional custom configuration, model store, and inference engine.
+    ///
+    /// - Parameters:
+    ///   - configuration: The configuration used to locate and manage local model files.
+    ///   - modelStore: An optional custom Hugging Face model store.
+    ///   - inferenceEngine: An optional custom inference engine implementation.
     public init(
         configuration: LocalAIKitConfiguration = .init(),
         modelStore: HuggingFaceModelStore? = nil,
@@ -43,28 +68,32 @@ public final class LocalAIKitModelManager: @unchecked Sendable {
         self.inferenceEngine = inferenceEngine ?? LocalAIKitInferenceEngineFactory.makeDefault()
     }
 
+    /// Resets the loaded model and inference snapshot state back to idle values.
     public func resetModelState() {
         modelStatus = .idle
         loadedModel = nil
         resetInferenceState()
     }
 
+    /// Clears the current request and generated text without changing the model lifecycle state.
     public func resetInferenceState() {
         request = nil
         outputText = ""
-        statusMessage = nil
     }
 
+    /// Indicates whether the manager is currently busy loading or generating.
     public var isBusy: Bool {
         modelStatus == .downloading ||
         modelStatus == .loadingIntoMemory ||
         modelStatus == .generating
     }
 
+    /// Indicates whether the manager has a ready-to-use loaded model.
     public var isReady: Bool {
         modelStatus == .ready
     }
 
+    /// Returns a user-facing summary string for the current model lifecycle state.
     public var modelStatusText: String {
         switch modelStatus {
         case .idle:
@@ -82,6 +111,12 @@ public final class LocalAIKitModelManager: @unchecked Sendable {
         }
     }
 
+    /// Downloads a Hugging Face package, loads it into memory, and updates observable model state.
+    ///
+    /// - Parameters:
+    ///   - package: The Hugging Face model package to download and load.
+    ///   - onProgress: Optional async callback that receives coarse progress updates while assets download.
+    /// - Returns: The loaded model contents.
     public func load(
         _ package: HuggingFaceModelPackage,
         onProgress: (@Sendable (HuggingFaceModelDownloadProgress) async -> Void)? = nil
@@ -110,6 +145,11 @@ public final class LocalAIKitModelManager: @unchecked Sendable {
         }
     }
 
+    /// Loads already-downloaded model files into memory and updates observable model state.
+    ///
+    /// - Parameters:
+    ///   - downloadedModel: The downloaded model files to load into memory.
+    /// - Returns: The loaded model contents.
     public func load(downloadedModel: DownloadedModel) throws -> LoadedModelContents {
         resetModelState()
         modelStatus = .loadingIntoMemory
@@ -125,6 +165,11 @@ public final class LocalAIKitModelManager: @unchecked Sendable {
         }
     }
 
+    /// Loads the files from disk into memory and returns a `LoadedModelContents` snapshot.
+    ///
+    /// - Parameters:
+    ///   - downloadedModel: The downloaded model to load into memory.
+    /// - Returns: The in-memory representation of the model files.
     public func loadIntoMemory(_ downloadedModel: DownloadedModel) throws -> LoadedModelContents {
         var loadedURLs: [String: URL] = [:]
         loadedURLs.reserveCapacity(downloadedModel.files.count)
@@ -143,6 +188,13 @@ public final class LocalAIKitModelManager: @unchecked Sendable {
 }
 
 public extension LocalAIKitModelManager {
+    /// Generates plain text from a request using already loaded model contents.
+    ///
+    /// - Parameters:
+    ///   - request: The inference request to execute.
+    ///   - loadedModel: The in-memory model contents to generate from.
+    ///   - onPartialText: Optional async callback that receives incremental text updates while generation is in progress.
+    /// - Returns: The final generated text.
     func generate(
         _ request: LocalAIKitInferenceRequest,
         using loadedModel: LoadedModelContents,
@@ -152,7 +204,6 @@ public extension LocalAIKitModelManager {
         resetInferenceState()
         self.request = request
         modelStatus = .generating
-        statusMessage = "Generating text..."
 
         do {
             let wrappedPartialText: (@Sendable (String) -> Void)? = { [weak self] partialText in
@@ -167,17 +218,22 @@ public extension LocalAIKitModelManager {
             )
             outputText = result
             modelStatus = .ready
-            statusMessage = "Generation complete."
             Self.printGeneratedResponse(result)
             return result
         } catch {
             modelStatus = .failed(error: error)
-            statusMessage = error.localizedDescription
             NSLog("LocalAIKit.generate(using:) failed: \(error.localizedDescription)")
             throw error
         }
     }
 
+    /// Loads a downloaded model into memory and then generates plain text from the request.
+    ///
+    /// - Parameters:
+    ///   - request: The inference request to execute.
+    ///   - downloadedModel: The downloaded model files to load and generate from.
+    ///   - onPartialText: Optional async callback that receives incremental text updates while generation is in progress.
+    /// - Returns: The final generated text.
     func generate(
         _ request: LocalAIKitInferenceRequest,
         using downloadedModel: DownloadedModel,
@@ -187,6 +243,13 @@ public extension LocalAIKitModelManager {
         return try await generate(request, using: loadedModel, onPartialText: onPartialText)
     }
 
+    /// Downloads a Hugging Face package, loads it into memory, and generates plain text from the request.
+    ///
+    /// - Parameters:
+    ///   - request: The inference request to execute.
+    ///   - package: The Hugging Face model package to download, load, and generate from.
+    ///   - onPartialText: Optional async callback that receives incremental text updates while generation is in progress.
+    /// - Returns: The final generated text.
     func generate(
         _ request: LocalAIKitInferenceRequest,
         package: HuggingFaceModelPackage,
@@ -196,6 +259,14 @@ public extension LocalAIKitModelManager {
         return try await generate(request, using: loadedModel, onPartialText: onPartialText)
     }
 
+    /// Generates structured output from already loaded model contents and decodes it into the requested Swift type.
+    ///
+    /// - Parameters:
+    ///   - request: The inference request to execute.
+    ///   - type: The `Decodable` type to decode the structured response into.
+    ///   - loadedModel: The in-memory model contents to generate from.
+    ///   - onPartialText: Optional async callback that receives incremental text updates while generation is in progress.
+    /// - Returns: The decoded structured output.
     func generateStructured<T: Decodable>(
         _ request: LocalAIKitInferenceRequest,
         as type: T.Type = T.self,
@@ -207,6 +278,14 @@ public extension LocalAIKitModelManager {
         return try decodeStructuredOutput(result, as: type)
     }
 
+    /// Loads a downloaded model into memory and generates structured output decoded into the requested Swift type.
+    ///
+    /// - Parameters:
+    ///   - request: The inference request to execute.
+    ///   - type: The `Decodable` type to decode the structured response into.
+    ///   - downloadedModel: The downloaded model files to load and generate from.
+    ///   - onPartialText: Optional async callback that receives incremental text updates while generation is in progress.
+    /// - Returns: The decoded structured output.
     func generateStructured<T: Decodable>(
         _ request: LocalAIKitInferenceRequest,
         as type: T.Type = T.self,
@@ -217,6 +296,14 @@ public extension LocalAIKitModelManager {
         return try await generateStructured(request, as: type, using: loadedModel, onPartialText: onPartialText)
     }
 
+    /// Downloads a Hugging Face package, loads it into memory, and generates structured output decoded into the requested Swift type.
+    ///
+    /// - Parameters:
+    ///   - request: The inference request to execute.
+    ///   - type: The `Decodable` type to decode the structured response into.
+    ///   - package: The Hugging Face model package to download, load, and generate from.
+    ///   - onPartialText: Optional async callback that receives incremental text updates while generation is in progress.
+    /// - Returns: The decoded structured output.
     func generateStructured<T: Decodable>(
         _ request: LocalAIKitInferenceRequest,
         as type: T.Type = T.self,

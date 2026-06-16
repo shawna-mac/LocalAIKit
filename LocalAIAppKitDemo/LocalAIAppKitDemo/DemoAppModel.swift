@@ -12,28 +12,6 @@ import Observation
 @MainActor
 @Observable
 final class DemoAppModel {
-    struct ChatMessage: Identifiable, Hashable {
-        enum Role: String, Hashable {
-            case system
-            case user
-            case assistant
-            case error
-        }
-
-        let id = UUID()
-        var role: Role
-        var text: String
-    }
-
-    struct StructuredContactRecord: Codable, Hashable {
-        var name: String
-        var title: String
-        var email: String
-    }
-
-    struct TimeLookupInput: Codable, Hashable {
-        var timezone: String
-    }
 
     var modelRepository: String = "ggml-org/gemma-3-1b-it-GGUF"
     var modelRevision: String = "main"
