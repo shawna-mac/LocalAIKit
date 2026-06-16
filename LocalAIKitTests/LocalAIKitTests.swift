@@ -80,13 +80,11 @@ final class LocalAIKitTests: XCTestCase {
 
         let loadedModel = try client.load(downloadedModel: downloadedModel)
 
-        let modelStatus = await client.modelStatus
-        let statusMessage = await client.statusMessage
-        let clientLoadedModel = await client.loadedModel
-        let isBusy = await client.isBusy
+        let modelStatus = client.modelStatus
+        let clientLoadedModel = client.loadedModel
+        let isBusy = client.isBusy
 
         XCTAssertEqual(modelStatus, .ready)
-        XCTAssertEqual(statusMessage, "Model ready.")
         XCTAssertEqual(loadedModel.data(for: "model.gguf"), expectedData)
         XCTAssertEqual(clientLoadedModel?.data(for: "model.gguf"), expectedData)
         XCTAssertFalse(isBusy)
@@ -463,7 +461,7 @@ final class LocalAIKitTests: XCTestCase {
         XCTAssertEqual(runResult.toolObservations.first?.result, "Time lookup for America/Chicago")
     }
 
-    func testInferenceStateUpdatesWhenGenerationCompletes() async throws {
+    func testModelManagerUpdatesWhenGenerationCompletes() async throws {
         let package = HuggingFaceModelPackage(
             repository: HuggingFaceRepository(identifier: "org/model", revision: "main"),
             assets: [HuggingFaceModelAsset(filename: "model.gguf")]
@@ -478,16 +476,17 @@ final class LocalAIKitTests: XCTestCase {
         let downloadedModel = DownloadedModel(package: package, files: ["model.gguf": fileURL])
         let engine = StubInferenceEngine(result: "generated text")
         let client = LocalAIKitModelManager(inferenceEngine: engine)
-        let state = await LocalAIKitInferenceState(client: client, downloadedModel: downloadedModel)
 
-        await state.generate(LocalAIKitInferenceRequest(prompt: "Write a sentence"))
+        let generatedText = try await client.generate(
+            LocalAIKitInferenceRequest(prompt: "Write a sentence"),
+            using: downloadedModel
+        )
 
-        let modelStatus = await state.modelStatus
-        let outputText = await state.outputText
-        let statusMessage = await state.statusMessage
-        XCTAssertEqual(modelStatus, .ready)
-        XCTAssertEqual(outputText, "generated text")
-        XCTAssertEqual(statusMessage, "Generation complete.")
+        XCTAssertEqual(generatedText, "generated text")
+        XCTAssertEqual(client.modelStatus, .ready)
+        XCTAssertEqual(client.request?.prompt, "Write a sentence")
+        XCTAssertEqual(client.outputText, "generated text")
+        XCTAssertEqual(client.statusMessage, "Generation complete.")
     }
 }
 

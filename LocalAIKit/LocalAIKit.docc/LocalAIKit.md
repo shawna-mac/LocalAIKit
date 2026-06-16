@@ -94,7 +94,6 @@ let agent = Agent(title: "Time Agent")
 - ``LoadedModelContents``
 - ``LocalAIKitModelStatus``
 - ``LocalAIKitInferenceRequest``
-- ``LocalAIKitInferenceState``
 - ``LocalAIKitInferenceEngine``
 - ``LlamaCppInferenceEngine``
 - ``UnsupportedLocalAIKitInferenceEngine``

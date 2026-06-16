@@ -44,10 +44,7 @@ final class DemoAppModel {
     var systemPrompt: String = "You are a helpful assistant."
     var inputText: String = "Hello! What can you help me with?"
     var statusText: String = "Enter a model and download it to begin."
-    var inferencePhaseText: String = "idle"
-    var outputText: String = ""
     var errorText: String?
-    var generationStatusText: String = "Idle"
     var structuredPromptText: String = "Extract a contact card with exactly these fields: name, title, and email. My name is Taylor Chen, I work at LocalAIKit Labs as a product engineer, and my email is taylor@localaikit.dev."
     var structuredStatusText: String = "Idle"
     var structuredOutputText: String = ""
@@ -94,6 +91,8 @@ final class DemoAppModel {
 
     var modelStatusText: String { client.modelStatusText }
 
+    var generationStatusText: String { client.statusMessage ?? client.modelStatusText }
+
     var loadStatusText: String { client.statusMessage ?? client.modelStatusText }
 
     var modelSummary: String {
@@ -123,9 +122,9 @@ final class DemoAppModel {
     }
 
     var latestAssistantReplyText: String {
-        let trimmedOutput = outputText.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !trimmedOutput.isEmpty && trimmedOutput != "Generating response..." {
-            return outputText
+        let trimmedOutput = client.outputText.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedOutput.isEmpty {
+            return client.outputText
         }
 
         if let latestAssistant = chatMessages.last(where: { $0.role == .assistant && !$0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) {
@@ -152,10 +151,7 @@ final class DemoAppModel {
     func downloadAndLoadModel() async {
         NSLog("LocalAIKitDemoApp: downloadAndLoadModel started")
         errorText = nil
-        outputText = ""
         statusText = "Preparing model..."
-        inferencePhaseText = "idle"
-        generationStatusText = "Idle"
 
         do {
             let package = try makePackage()
@@ -166,7 +162,7 @@ final class DemoAppModel {
                     self.statusText = "Downloading \(percent)%..."
                 }
             }
-            guard let loaded = loadedModel, modelStatus == .ready else {
+            guard loadedModel != nil, modelStatus == .ready else {
                 errorText = client.statusMessage ?? "Model load failed."
                 statusText = errorText ?? "Model load failed."
                 return
@@ -214,10 +210,6 @@ final class DemoAppModel {
         }
 
         errorText = nil
-        outputText = "Generating response..."
-        inferencePhaseText = "generating"
-        generationStatusText = "Generating response..."
-
         chatMessages.append(.init(role: .user, text: trimmedInput))
         let assistantMessageID = UUID()
         chatMessages.append(.init(role: .assistant, text: "Generating response..."))
@@ -235,19 +227,14 @@ final class DemoAppModel {
                 onPartialText: { [weak self] partialText in
                     Task { @MainActor in
                         guard let self else { return }
-                        self.outputText = partialText
                         self.updateAssistantMessage(id: assistantMessageID, text: partialText.isEmpty ? "Generating response..." : partialText)
                     }
                 }
             )
             NSLog("LocalAIKitDemoApp: client.run completed")
 
-            inferencePhaseText = "ready"
-            generationStatusText = "Reply generated."
-
             let rawReply = result.finalResponse.trimmingCharacters(in: .whitespacesAndNewlines)
             let reply = rawReply.isEmpty ? "(empty response)" : rawReply
-            outputText = reply
             updateAssistantMessage(id: assistantMessageID, text: reply)
             statusText = "Reply generated."
         } catch {
@@ -279,7 +266,6 @@ final class DemoAppModel {
         structuredOutputJSONText = ""
         structuredOutputText = ""
         errorText = nil
-        inferencePhaseText = "generating"
 
         do {
             let decoded: StructuredContactRecord = try await client.generateStructured(
@@ -305,7 +291,6 @@ final class DemoAppModel {
             ].joined(separator: "\n")
             structuredStatusText = "Structured output complete."
             structuredOutputText = jsonText
-            inferencePhaseText = "ready"
             NSLog("LocalAIKitDemoApp: runStructuredDemo completed")
         } catch {
             let message = error.localizedDescription
@@ -314,7 +299,6 @@ final class DemoAppModel {
             structuredOutputJSONText = ""
             errorText = message
             statusText = message
-            inferencePhaseText = "failed"
             NSLog("LocalAIKitDemoApp: runStructuredDemo failed: %@", message)
         }
     }
@@ -445,8 +429,6 @@ final class DemoAppModel {
         let message = error.localizedDescription
         errorText = message
         statusText = message
-        outputText = message
-        generationStatusText = message
         structuredStatusText = message
         structuredResultText = message
         structuredOutputJSONText = ""

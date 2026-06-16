@@ -298,7 +298,6 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 16) {
             GroupBox("Load State") {
                 VStack(alignment: .leading, spacing: 6) {
-//                    Text("Phase: \(model.loadPhaseText)")
                     Text("Status: \(model.loadStatusText)")
                     Text("Model: \(model.modelSummary)")
                 }
@@ -316,8 +315,8 @@ struct ContentView: View {
 
             GroupBox("Generation Status") {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Phase: \(model.inferencePhaseText)")
                     Text("Status: \(model.generationStatusText)")
+                    Text("Model: \(model.modelStatusText)")
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }

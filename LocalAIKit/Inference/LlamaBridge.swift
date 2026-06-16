@@ -41,7 +41,7 @@ public struct LlamaCppInferenceEngine: LocalAIKitInferenceEngine {
         let prompt = composePrompt(request: request)
         NSLog("LlamaCppInferenceEngine: prompt composed (\(prompt.count) chars)")
 
-        var modelParams = llama_model_default_params()
+        let modelParams = llama_model_default_params()
         NSLog("LlamaCppInferenceEngine: loading model at \(modelURL.path)")
         let modelPointer = modelURL.path.withCString { path in
             llama_model_load_from_file(path, modelParams)

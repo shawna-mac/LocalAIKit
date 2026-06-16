@@ -10,9 +10,12 @@ import SwiftUI
 
 @MainActor
 @Observable
+/// Manages observable model downloads, including background transfer recovery and persisted queue state.
 public final class LocalAIKitDownloadManager {
+    /// The shared download manager used by the demo apps and other callers that want one observable queue.
     public static let shared = LocalAIKitDownloadManager()
 
+    /// The current downloads known to the manager, ordered by insertion and updated as progress changes.
     public private(set) var downloads: [LocalAIKitModelDownload] = []
 
     private let modelStore: HuggingFaceModelStore
@@ -24,6 +27,12 @@ public final class LocalAIKitDownloadManager {
     @ObservationIgnored private var assetProgressByDownloadID: [String: [Int: Double]] = [:]
     @ObservationIgnored private var backgroundEventsCompletionHandler: (() -> Void)?
 
+    /// Creates a download manager for the supplied configuration and optional custom model store.
+    ///
+    /// - Parameters:
+    ///   - configuration: The configuration that provides the models directory and related paths.
+    ///   - modelStore: An optional custom model store to use for cache paths and download requests.
+    ///   - sessionIdentifier: An optional background URL session identifier. A default is derived from the app bundle identifier.
     public init(
         configuration: LocalAIKitConfiguration = .init(),
         modelStore: HuggingFaceModelStore? = nil,
@@ -62,6 +71,12 @@ public final class LocalAIKitDownloadManager {
         }
     }
 
+    /// Starts a background download for the package and waits until the model is fully available on disk.
+    ///
+    /// - Parameters:
+    ///   - package: The Hugging Face model package to download.
+    ///   - onProgress: Optional async callback that receives coarse progress updates while assets download.
+    /// - Returns: The downloaded model files on disk, ready for loading into memory.
     public func prepareModel(
         _ package: HuggingFaceModelPackage,
         onProgress: (@Sendable (HuggingFaceModelDownloadProgress) async -> Void)? = nil
@@ -104,6 +119,10 @@ public final class LocalAIKitDownloadManager {
         }
     }
 
+    /// Enqueues a package for background download without waiting for completion.
+    ///
+    /// - Parameters:
+    ///   - package: The Hugging Face model package to add to the background download queue.
     public func queue(_ package: HuggingFaceModelPackage) {
         let id = modelStore.cacheKey(for: package)
 
@@ -120,6 +139,10 @@ public final class LocalAIKitDownloadManager {
         startBackgroundDownloads(package: package, id: id)
     }
 
+    /// Cancels the active background download associated with the given download identifier.
+    ///
+    /// - Parameters:
+    ///   - id: The download identifier to cancel.
     public func cancel(id: String) {
         cancelBackgroundTasks(for: id)
         assetProgressByDownloadID[id] = nil
@@ -129,6 +152,10 @@ public final class LocalAIKitDownloadManager {
         persistDownloads()
     }
 
+    /// Removes the download record and unregisters its package metadata.
+    ///
+    /// - Parameters:
+    ///   - id: The download identifier to remove from the observable queue.
     public func remove(id: String) {
         cancelBackgroundTasks(for: id)
         assetProgressByDownloadID[id] = nil
@@ -137,6 +164,7 @@ public final class LocalAIKitDownloadManager {
         persistDownloads()
     }
 
+    /// Removes completed, failed, and cancelled downloads from the observable queue.
     public func clearFinished() {
         let finishedIDs = downloads.compactMap { item -> String? in
             switch item.downloadStatus {
@@ -161,6 +189,11 @@ public final class LocalAIKitDownloadManager {
         persistDownloads()
     }
 
+    /// Stores the completion handler that should be called when the background URL session finishes its events.
+    ///
+    /// - Parameters:
+    ///   - identifier: The background session identifier associated with the current app launch.
+    ///   - completionHandler: The completion handler to invoke after the session finishes delivering events.
     public func handleBackgroundEvents(
         identifier: String,
         completionHandler: @escaping () -> Void

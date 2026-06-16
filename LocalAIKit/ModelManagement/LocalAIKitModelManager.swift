@@ -7,6 +7,20 @@
 
 import Foundation
 
+public protocol LocalAIKitInferenceEngine: Sendable {
+    func generate(
+        request: LocalAIKitInferenceRequest,
+        using model: LoadedModelContents,
+        onPartialText: (@Sendable (String) -> Void)?
+    ) async throws -> String
+}
+
+public enum LocalAIKitInferenceEngineFactory {
+    public static func makeDefault() -> any LocalAIKitInferenceEngine {
+        return LlamaCppInferenceEngine()
+    }
+}
+
 @Observable
 public final class LocalAIKitModelManager: @unchecked Sendable {
     public let configuration: LocalAIKitConfiguration
@@ -14,6 +28,8 @@ public final class LocalAIKitModelManager: @unchecked Sendable {
     public let inferenceEngine: any LocalAIKitInferenceEngine
     public private(set) var modelStatus: LocalAIKitModelStatus = .idle
     public private(set) var loadedModel: LoadedModelContents?
+    public private(set) var request: LocalAIKitInferenceRequest?
+    public private(set) var outputText: String = ""
     public private(set) var statusMessage: String?
 
     public init(
@@ -30,6 +46,12 @@ public final class LocalAIKitModelManager: @unchecked Sendable {
     public func resetModelState() {
         modelStatus = .idle
         loadedModel = nil
+        resetInferenceState()
+    }
+
+    public func resetInferenceState() {
+        request = nil
+        outputText = ""
         statusMessage = nil
     }
 
@@ -81,11 +103,9 @@ public final class LocalAIKitModelManager: @unchecked Sendable {
             let loaded = try loadIntoMemory(downloadedModel)
             loadedModel = loaded
             modelStatus = .ready
-            statusMessage = "Model ready."
             return loaded
         } catch {
             modelStatus = .failed(error: error)
-            statusMessage = error.localizedDescription
             throw error
         }
     }
@@ -98,11 +118,9 @@ public final class LocalAIKitModelManager: @unchecked Sendable {
             let loaded = try loadIntoMemory(downloadedModel)
             loadedModel = loaded
             modelStatus = .ready
-            statusMessage = "Model ready."
             return loaded
         } catch {
             modelStatus = .failed(error: error)
-            statusMessage = error.localizedDescription
             throw error
         }
     }
@@ -131,16 +149,30 @@ public extension LocalAIKitModelManager {
         onPartialText: (@Sendable (String) -> Void)? = nil
     ) async throws -> String {
         NSLog("LocalAIKit.generate(using:) started")
+        resetInferenceState()
+        self.request = request
+        modelStatus = .generating
+        statusMessage = "Generating text..."
 
         do {
+            let wrappedPartialText: (@Sendable (String) -> Void)? = { [weak self] partialText in
+                self?.outputText = partialText
+                onPartialText?(partialText)
+            }
+
             let result = try await inferenceEngine.generate(
                 request: request,
                 using: loadedModel,
-                onPartialText: onPartialText
+                onPartialText: wrappedPartialText
             )
+            outputText = result
+            modelStatus = .ready
+            statusMessage = "Generation complete."
             Self.printGeneratedResponse(result)
             return result
         } catch {
+            modelStatus = .failed(error: error)
+            statusMessage = error.localizedDescription
             NSLog("LocalAIKit.generate(using:) failed: \(error.localizedDescription)")
             throw error
         }
