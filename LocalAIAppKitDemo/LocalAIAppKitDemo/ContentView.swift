@@ -14,11 +14,10 @@ struct ContentView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     modelSection(model)
                     downloadsSection(model)
-                    blueprintSection(model)
+                    agentSection(model)
                     structuredSection(model)
                     toolSection(model)
                     chatSection(model)
-                    statusSection(model)
                 }
             }
             .padding(24)
@@ -90,7 +89,14 @@ struct ContentView: View {
                                 .foregroundStyle(.secondary)
                         } else {
                             ForEach(model.completedDownloads) { download in
-                                downloadRow(download)
+                                let isLoaded = model.loadedModel?.package == download.package
+                                Button {
+                                    model.loadCompletedDownload(download)
+                                } label: {
+                                    completedDownloadRow(download, isLoaded: isLoaded)
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(isLoaded)
                             }
                         }
                     }
@@ -107,6 +113,8 @@ struct ContentView: View {
             HStack {
                 Text(download.displayName)
                     .font(.headline)
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
                 Spacer()
                 Text("\(download.progressPercentage)%")
                     .foregroundStyle(.secondary)
@@ -128,21 +136,43 @@ struct ContentView: View {
     }
 
     @ViewBuilder
-    private func blueprintSection(_ model: DemoAppModel) -> some View {
-        GroupBox("Agent Blueprint") {
+    private func completedDownloadRow(_ download: LocalAIKitModelDownload, isLoaded: Bool) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(download.displayName)
+                    .font(.headline)
+                Text("Tap to load into memory.")
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            if isLoaded {
+                Label("Loaded", systemImage: "checkmark.circle.fill")
+                    .labelStyle(.titleAndIcon)
+                    .foregroundStyle(.green)
+            } else {
+                Text("Load")
+                    .foregroundStyle(.blue)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+
+    @ViewBuilder
+    private func agentSection(_ model: DemoAppModel) -> some View {
+        GroupBox("Agent Template") {
             VStack(alignment: .leading, spacing: 12) {
-                Picker("Blueprint", selection: $model.selectedBlueprint) {
-                    ForEach(LocalAIKitAgentBlueprintPreset.allCases) { blueprint in
-                        Text(blueprint.title).tag(blueprint)
+                Picker("Template", selection: $model.selectedAgent) {
+                    ForEach(LocalAIKitAgentPreset.allCases) { template in
+                        Text(template.title).tag(template)
                     }
                 }
                 .pickerStyle(.menu)
 
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(model.selectedBlueprintSummary)
+                    Text(model.selectedAgentSummary)
                         .foregroundStyle(.secondary)
 
-                    Text("Mode: \(model.selectedBlueprintModeText)")
+                    Text("Mode: \(model.selectedAgentModeText)")
                         .font(.subheadline.weight(.semibold))
                 }
 
@@ -156,16 +186,16 @@ struct ContentView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Starter Prompt")
                         .font(.headline)
-                    Text(model.selectedBlueprint.blueprint.starterPrompt)
+                    Text(model.selectedAgent.agentTemplate.starterPrompt)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundStyle(.secondary)
                         .textSelection(.enabled)
                 }
 
                 HStack(spacing: 12) {
-                    Button("Run Blueprint") {
+                    Button("Run Template") {
                         Task {
-                            await model.runSelectedBlueprint()
+                            await model.runSelectedTemplate()
                         }
                     }
                     .disabled(!model.canChat)
@@ -182,14 +212,14 @@ struct ContentView: View {
     private func structuredSection(_ model: DemoAppModel) -> some View {
         GroupBox("Structured Output") {
             VStack(alignment: .leading, spacing: 12) {
-                Picker("Structured Blueprint", selection: $model.structuredBlueprint) {
-                    ForEach(LocalAIKitAgentBlueprintPreset.allCases) { blueprint in
-                        Text(blueprint.title).tag(blueprint)
+                Picker("Structured Agent", selection: $model.structuredAgent) {
+                    ForEach(LocalAIKitAgentPreset.allCases) { structuredAgent in
+                        Text(structuredAgent.title).tag(structuredAgent)
                     }
                 }
                 .pickerStyle(.menu)
 
-                Text(model.structuredBlueprintSummary)
+                Text(model.selectedAgentSummary)
                     .foregroundStyle(.secondary)
 
                 VStack(alignment: .leading, spacing: 6) {
@@ -208,7 +238,7 @@ struct ContentView: View {
                     }
                     .disabled(!model.canChat)
 
-                    Text(model.structuredStatusText)
+                    Text(model.modelStatusText)
                         .foregroundStyle(.secondary)
                 }
 
@@ -244,7 +274,7 @@ struct ContentView: View {
                     }
                     .disabled(!model.canChat)
 
-                    Text(model.toolStatusText)
+                    Text(model.modelStatusText)
                         .foregroundStyle(.secondary)
                 }
 
@@ -314,61 +344,6 @@ struct ContentView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-
-    @ViewBuilder
-    private func statusSection(_ model: DemoAppModel) -> some View {
-        VStack(alignment: .leading, spacing: 16) {
-            GroupBox("Load State") {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Status: \(model.loadStatusText)")
-                    Text("Model: \(model.modelSummary)")
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            GroupBox("Latest Reply") {
-                ScrollView {
-                    Text(model.latestAssistantReplyText)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .textSelection(.enabled)
-                }
-                .frame(minHeight: 180)
-            }
-
-            GroupBox("Generation Status") {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Model: \(model.modelStatusText)")
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            GroupBox("Structured Status") {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Status: \(model.structuredStatusText)")
-                    Text("Result: \(model.structuredResultText)")
-                    if !model.structuredOutputJSONText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                        Text("JSON:").font(.headline)
-                        ScrollView {
-                            Text(model.structuredOutputJSONText)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .textSelection(.enabled)
-                        }
-                        .frame(minHeight: 120)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            GroupBox("Tool Status") {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Status: \(model.toolStatusText)")
-                    Text("Output: \(model.toolOutputText)")
-                    Text("Observations: \(model.toolObservationsText)")
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
         }
     }
 

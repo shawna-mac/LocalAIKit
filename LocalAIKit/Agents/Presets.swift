@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum LocalAIKitAgentBlueprintPreset: String, CaseIterable, Identifiable, Sendable, Hashable {
+public enum LocalAIKitAgentPreset: String, CaseIterable, Identifiable, Sendable, Hashable {
     case generalAssistant
     case structuredExtractor
     case conciseSummarizer
@@ -35,7 +35,7 @@ public enum LocalAIKitAgentBlueprintPreset: String, CaseIterable, Identifiable, 
         case .generalAssistant:
             return "A friendly conversational agent for general chat and helpful answers."
         case .structuredExtractor:
-            return "A blueprint for strict JSON extraction into typed Swift models."
+            return "A template for strict JSON extraction into typed Swift models."
         case .conciseSummarizer:
             return "A short-form agent that turns longer text into compact summaries."
         case .codingAssistant:
@@ -43,10 +43,10 @@ public enum LocalAIKitAgentBlueprintPreset: String, CaseIterable, Identifiable, 
         }
     }
 
-    public var blueprint: LocalAIKitAgentBlueprint {
+    public var agentTemplate: LocalAIKitAgentTemplate {
         switch self {
         case .generalAssistant:
-            return LocalAIKitAgentBlueprint(
+            return LocalAIKitAgentTemplate(
                 id: rawValue,
                 name: title,
                 summary: summary,
@@ -56,7 +56,7 @@ public enum LocalAIKitAgentBlueprintPreset: String, CaseIterable, Identifiable, 
                 sampling: .init(maxTokens: 256, temperature: 0.7, topP: 0.95, topK: 40, repeatPenalty: 1.1)
             )
         case .structuredExtractor:
-            return LocalAIKitAgentBlueprint(
+            return LocalAIKitAgentTemplate(
                 id: rawValue,
                 name: title,
                 summary: summary,
@@ -64,7 +64,7 @@ public enum LocalAIKitAgentBlueprintPreset: String, CaseIterable, Identifiable, 
                 starterPrompt: "Extract a contact record with fields name, title, and email from this text: My name is Taylor Chen, I work as a product engineer, and my email is taylor@localaikit.dev.",
                 outputMode: .structuredJSON,
                 sampling: .init(maxTokens: 180, temperature: 0, topP: 1, topK: 1, repeatPenalty: 1),
-                structuredGuide: .init(
+                structuredGuide: StructuredGuide(
                     instructions: "Return only valid JSON. Do not include markdown fences, commentary, or extra text.",
                     exampleJSON: """
                     {
@@ -76,7 +76,7 @@ public enum LocalAIKitAgentBlueprintPreset: String, CaseIterable, Identifiable, 
                 )
             )
         case .conciseSummarizer:
-            return LocalAIKitAgentBlueprint(
+            return LocalAIKitAgentTemplate(
                 id: rawValue,
                 name: title,
                 summary: summary,
@@ -86,7 +86,7 @@ public enum LocalAIKitAgentBlueprintPreset: String, CaseIterable, Identifiable, 
                 sampling: .init(maxTokens: 160, temperature: 0.4, topP: 0.9, topK: 25, repeatPenalty: 1.0)
             )
         case .codingAssistant:
-            return LocalAIKitAgentBlueprint(
+            return LocalAIKitAgentTemplate(
                 id: rawValue,
                 name: title,
                 summary: summary,
@@ -98,3 +98,6 @@ public enum LocalAIKitAgentBlueprintPreset: String, CaseIterable, Identifiable, 
         }
     }
 }
+
+@available(*, deprecated, renamed: "LocalAIKitAgentPreset")
+public typealias LocalAIKitAgentTemplatePreset = LocalAIKitAgentPreset

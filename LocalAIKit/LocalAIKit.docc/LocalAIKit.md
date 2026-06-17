@@ -59,7 +59,7 @@ print(result)
 You can also define an agent blueprint to keep a reusable persona or workflow in one place:
 
 ```swift
-let blueprint = LocalAIKitAgentBlueprintPreset.structuredExtractor.blueprint
+let blueprint = LocalAIKitAgentPreset.structuredExtractor.blueprint
 let agent = LocalAIKitAgent(blueprint: blueprint)
 let request = agent.makeStructuredRequest(prompt: "Extract the contact info from this text.")
 ```
@@ -98,9 +98,9 @@ let agent = Agent(title: "Time Agent")
 - ``LlamaCppInferenceEngine``
 - ``UnsupportedLocalAIKitInferenceEngine``
 - ``HuggingFaceModelStore``
-- ``LocalAIKitAgentBlueprint``
+- ``LocalAIKitAgentTemplate``
 - ``LocalAIKitAgent``
-- ``LocalAIKitAgentBlueprintPreset``
+- ``LocalAIKitAgentPreset``
 - ``LocalAIKitConversationTurn``
 - ``LocalAIKitAgentTool``
 - ``LocalAIKitAgentToolCall``

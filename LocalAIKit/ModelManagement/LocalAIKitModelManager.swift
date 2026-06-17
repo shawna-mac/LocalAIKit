@@ -165,6 +165,27 @@ public final class LocalAIKitModelManager: @unchecked Sendable {
         }
     }
 
+    /// Loads a previously downloaded model identified by a tracked download record.
+    ///
+    /// - Parameters:
+    ///   - download: The completed download record whose cached files should be loaded into memory.
+    /// - Returns: The loaded model contents.
+    public func load(download: LocalAIKitModelDownload) throws -> LoadedModelContents {
+        resetModelState()
+        modelStatus = .loadingIntoMemory
+
+        do {
+            let downloadedModel = try modelStore.downloadedModel(for: download.package)
+            let loaded = try loadIntoMemory(downloadedModel)
+            loadedModel = loaded
+            modelStatus = .ready
+            return loaded
+        } catch {
+            modelStatus = .failed(error: error)
+            throw error
+        }
+    }
+
     /// Loads the files from disk into memory and returns a `LoadedModelContents` snapshot.
     ///
     /// - Parameters:

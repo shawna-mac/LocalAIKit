@@ -24,7 +24,17 @@ public struct LocalAIKitConversationTurn: Sendable, Hashable, Identifiable {
     }
 }
 
-public struct LocalAIKitAgentBlueprint: Sendable, Hashable, Identifiable {
+public struct StructuredGuide: Sendable, Hashable {
+    public var instructions: String
+    public var exampleJSON: String
+
+    public init(instructions: String, exampleJSON: String = "") {
+        self.instructions = instructions
+        self.exampleJSON = exampleJSON
+    }
+}
+
+public struct LocalAIKitAgentTemplate: Sendable, Hashable, Identifiable {
     public struct Sampling: Sendable, Hashable {
         public var maxTokens: Int
         public var temperature: Double
@@ -44,16 +54,6 @@ public struct LocalAIKitAgentBlueprint: Sendable, Hashable, Identifiable {
             self.topP = topP
             self.topK = topK
             self.repeatPenalty = repeatPenalty
-        }
-    }
-
-    public struct StructuredGuide: Sendable, Hashable {
-        public var instructions: String
-        public var exampleJSON: String
-
-        public init(instructions: String, exampleJSON: String = "") {
-            self.instructions = instructions
-            self.exampleJSON = exampleJSON
         }
     }
 
@@ -255,7 +255,7 @@ public struct LocalAIKitAgentRunResult: Sendable, Hashable {
 
 public struct LocalAIKitAgent: Sendable, Hashable {
     public var title: String
-    public var blueprint: LocalAIKitAgentBlueprint
+    public var agentTemplate: LocalAIKitAgentTemplate
     public var tools: [LocalAIKitAgentTool]
     public var maxToolIterations: Int
 
@@ -263,10 +263,10 @@ public struct LocalAIKitAgent: Sendable, Hashable {
         title: String,
         systemPrompt: String = "",
         starterPrompt: String = "",
-        outputMode: LocalAIKitAgentBlueprint.OutputMode = .chat
+        outputMode: LocalAIKitAgentTemplate.OutputMode = .chat
     ) {
         self.title = title
-        self.blueprint = LocalAIKitAgentBlueprint(
+        self.agentTemplate = LocalAIKitAgentTemplate(
             id: title,
             name: title,
             summary: title,
@@ -282,12 +282,12 @@ public struct LocalAIKitAgent: Sendable, Hashable {
     }
 
     public init(
-        blueprint: LocalAIKitAgentBlueprint,
+        agentTemplate: LocalAIKitAgentTemplate,
         tools: [LocalAIKitAgentTool] = [],
         maxToolIterations: Int = 4
     ) {
-        self.title = blueprint.name
-        self.blueprint = blueprint
+        self.title = agentTemplate.name
+        self.agentTemplate = agentTemplate
         self.tools = tools
         self.maxToolIterations = maxToolIterations
     }
@@ -325,7 +325,7 @@ public struct LocalAIKitAgent: Sendable, Hashable {
         history: [LocalAIKitConversationTurn] = [],
         overrideSystemPrompt: String? = nil
     ) -> LocalAIKitInferenceRequest {
-        blueprint.makeChatRequest(
+        agentTemplate.makeChatRequest(
             prompt: prompt,
             history: history,
             overrideSystemPrompt: overrideSystemPrompt
@@ -337,7 +337,7 @@ public struct LocalAIKitAgent: Sendable, Hashable {
         history: [LocalAIKitConversationTurn] = [],
         overrideSystemPrompt: String? = nil
     ) -> LocalAIKitInferenceRequest {
-        blueprint.makeStructuredRequest(
+        agentTemplate.makeStructuredRequest(
             prompt: prompt,
             history: history,
             overrideSystemPrompt: overrideSystemPrompt
@@ -349,7 +349,7 @@ public struct LocalAIKitAgent: Sendable, Hashable {
         history: [LocalAIKitConversationTurn] = [],
         overrideSystemPrompt: String? = nil
     ) -> LocalAIKitInferenceRequest {
-        var request = blueprint.makeToolRequest(
+        var request = agentTemplate.makeToolRequest(
             prompt: prompt,
             history: history,
             overrideSystemPrompt: overrideSystemPrompt
@@ -455,6 +455,22 @@ public struct LocalAIKitAgent: Sendable, Hashable {
                     let result = try await tool.call(arguments: toolCall.arguments)
                     observations.append(.init(name: tool.name, result: result))
                     currentHistory.append(.init(role: .system, text: "Tool \(tool.name) result: \(result)"))
+
+                    let finalRequest = makeChatRequest(
+                        prompt: prompt,
+                        history: currentHistory,
+                        overrideSystemPrompt: overrideSystemPrompt
+                    )
+                    let finalResponse = try await client.generate(
+                        finalRequest,
+                        using: loadedModel,
+                        onPartialText: onPartialText
+                    )
+
+                    return LocalAIKitAgentRunResult(
+                        finalResponse: finalResponse,
+                        toolObservations: observations
+                    )
                 } catch {
                     let message = error.localizedDescription
                     observations.append(.init(name: tool.name, result: message))
@@ -612,14 +628,14 @@ public struct LocalAIKitAgent: Sendable, Hashable {
 
     public static func == (lhs: LocalAIKitAgent, rhs: LocalAIKitAgent) -> Bool {
         lhs.title == rhs.title &&
-        lhs.blueprint == rhs.blueprint &&
+        lhs.agentTemplate == rhs.agentTemplate &&
         lhs.tools.map(\.name) == rhs.tools.map(\.name) &&
         lhs.maxToolIterations == rhs.maxToolIterations
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(title)
-        hasher.combine(blueprint)
+        hasher.combine(agentTemplate)
         hasher.combine(tools.map(\.name))
         hasher.combine(maxToolIterations)
     }
@@ -628,8 +644,8 @@ public struct LocalAIKitAgent: Sendable, Hashable {
 public typealias Agent = LocalAIKitAgent
 
 public extension LocalAIKitModelManager {
-    func makeAgent(blueprint: LocalAIKitAgentBlueprint) -> LocalAIKitAgent {
-        LocalAIKitAgent(blueprint: blueprint)
+    func makeAgent(agentTemplate: LocalAIKitAgentTemplate) -> LocalAIKitAgent {
+        LocalAIKitAgent(agentTemplate: agentTemplate)
     }
 
     func generateStructured<T: Decodable>(

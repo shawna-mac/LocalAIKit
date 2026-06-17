@@ -16,26 +16,24 @@ final class DemoAppModel {
     var modelRepository: String = "ggml-org/gemma-3-1b-it-GGUF"
     var modelRevision: String = "main"
     var modelFilename: String = "gemma-3-1b-it-Q4_K_M.gguf"
-    var selectedBlueprint: LocalAIKitAgentBlueprintPreset = .generalAssistant {
+    var selectedAgent: LocalAIKitAgentPreset = .generalAssistant {
         didSet {
-            applySelectedBlueprint()
+            applySelectedAgent()
         }
     }
-    var structuredBlueprint: LocalAIKitAgentBlueprintPreset = .structuredExtractor {
+    var structuredAgent: LocalAIKitAgentPreset = .structuredExtractor {
         didSet {
-            applyStructuredBlueprint()
+            applyStructuredAgent()
         }
     }
     var systemPrompt: String = "You are a helpful assistant."
     var inputText: String = "Hello! What can you help me with?"
     var statusText: String = "Enter a model and download it to begin."
     var structuredPromptText: String = "Extract a contact card with exactly these fields: name, title, and email. My name is Taylor Chen, I work at LocalAIKit Labs as a product engineer, and my email is taylor@localaikit.dev."
-    var structuredStatusText: String = "Idle"
     var structuredOutputText: String = ""
     var structuredOutputJSONText: String = ""
     var structuredResultText: String = "No structured output yet."
     var toolPromptText: String = "What time is it in Chicago?"
-    var toolStatusText: String = "Idle"
     var toolOutputText: String = ""
     var toolObservationsText: String = "No tool calls yet."
     var chatMessages: [ChatMessage] = [
@@ -49,7 +47,7 @@ final class DemoAppModel {
         let client = LocalAIKitModelManager()
         self.client = client
         self.downloadManager = .shared
-        applySelectedBlueprint()
+        applySelectedAgent()
     }
 
     var canChat: Bool {
@@ -84,21 +82,17 @@ final class DemoAppModel {
         return "\(modelRepository) @ \(revision.isEmpty ? "main" : revision) / \(modelFilename)"
     }
 
-    var selectedBlueprintSummary: String {
-        selectedBlueprint.summary
+    var selectedAgentSummary: String {
+        selectedAgent.summary
     }
 
-    var selectedBlueprintModeText: String {
-        switch selectedBlueprint.blueprint.outputMode {
+    var selectedAgentModeText: String {
+        switch selectedAgent.agentTemplate.outputMode {
         case .chat:
             return "Chat"
         case .structuredJSON:
             return "Structured JSON"
         }
-    }
-
-    var structuredBlueprintSummary: String {
-        structuredBlueprint.summary
     }
 
     var activeDownloads: [LocalAIKitModelDownload] {
@@ -154,8 +148,8 @@ final class DemoAppModel {
             }
 
             statusText = "Model loaded. You can chat now."
-            inputText = selectedBlueprint.blueprint.starterPrompt
-            structuredPromptText = structuredBlueprint.blueprint.starterPrompt
+            inputText = selectedAgent.agentTemplate.starterPrompt
+            structuredPromptText = structuredAgent.agentTemplate.starterPrompt
             chatMessages.append(.init(role: .system, text: "Loaded \(modelSummary)."))
             NSLog("LocalAIKitDemoApp: model loaded")
         } catch {
@@ -173,8 +167,20 @@ final class DemoAppModel {
         }
     }
 
-    func runSelectedBlueprint() async {
-        inputText = selectedBlueprint.blueprint.starterPrompt
+    func loadCompletedDownload(_ download: LocalAIKitModelDownload) {
+        do {
+            _ = try client.load(download: download)
+            statusText = "Loaded \(download.displayName) into memory."
+            inputText = selectedAgent.agentTemplate.starterPrompt
+            structuredPromptText = structuredAgent.agentTemplate.starterPrompt
+            chatMessages.append(ChatMessage(role: .system, text: "Loaded \(download.displayName)."))
+        } catch {
+            handle(error: error)
+        }
+    }
+
+    func runSelectedTemplate() async {
+        inputText = selectedAgent.agentTemplate.starterPrompt
         await sendMessage()
     }
 
@@ -201,7 +207,7 @@ final class DemoAppModel {
 
         do {
             let result = try await client.run(
-                selectedAgent,
+                currentlySelectedAgent,
                 prompt: trimmedInput,
                 using: loadedModel,
                 history: conversationTurns,
@@ -230,52 +236,47 @@ final class DemoAppModel {
         NSLog("LocalAIKitDemoApp: runStructuredDemo started")
         let trimmedInput = structuredPromptText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedInput.isEmpty else {
-            structuredStatusText = "Enter a prompt for structured output."
-            structuredResultText = structuredStatusText
+            structuredResultText = "Enter a prompt for structured output."
             structuredOutputJSONText = ""
             return
         }
 
         guard let loadedModel else {
-            structuredStatusText = "Download and load a model before running structured output."
-            structuredResultText = structuredStatusText
+            structuredResultText = "Download and load a model before running structured output."
             structuredOutputJSONText = ""
             return
         }
 
-        structuredStatusText = "Generating structured output..."
-        structuredResultText = structuredStatusText
+        structuredResultText = modelStatusText
         structuredOutputJSONText = ""
         structuredOutputText = ""
 
         do {
-            let decoded: StructuredContactRecord = try await client.generateStructured(
-                client.makeAgent(blueprint: structuredBlueprint.blueprint),
+            let contactRectord: StructuredContactRecord = try await client.generateStructured(
+                client.makeAgent(agentTemplate: structuredAgent.agentTemplate),
                 prompt: trimmedInput,
                 as: StructuredContactRecord.self,
                 using: loadedModel,
                 history: conversationTurns,
-                overrideSystemPrompt: structuredBlueprint.blueprint.systemPrompt
+                overrideSystemPrompt: structuredAgent.agentTemplate.systemPrompt
             )
 
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-            let data = try encoder.encode(decoded)
+            let data = try encoder.encode(contactRectord)
             let jsonText = String(decoding: data, as: UTF8.self)
 
             structuredOutputText = jsonText
             structuredOutputJSONText = jsonText
             structuredResultText = [
-                "Name: \(decoded.name)",
-                "Title: \(decoded.title)",
-                "Email: \(decoded.email)",
+                "Name: \(contactRectord.name)",
+                "Title: \(contactRectord.title)",
+                "Email: \(contactRectord.email)",
             ].joined(separator: "\n")
-            structuredStatusText = "Structured output complete."
             structuredOutputText = jsonText
             NSLog("LocalAIKitDemoApp: runStructuredDemo completed")
         } catch {
             let message = error.localizedDescription
-            structuredStatusText = message
             structuredResultText = message
             structuredOutputJSONText = ""
             statusText = message
@@ -287,22 +288,18 @@ final class DemoAppModel {
         NSLog("LocalAIKitDemoApp: runToolDemo started")
         let trimmedInput = toolPromptText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedInput.isEmpty else {
-            toolStatusText = "Enter a prompt for tool calling."
             toolOutputText = ""
-            toolObservationsText = toolStatusText
+            toolObservationsText = "Enter a prompt for tool calling."
             return
         }
 
         guard let loadedModel else {
-            toolStatusText = "Download and load a model before using tools."
             toolOutputText = ""
-            toolObservationsText = toolStatusText
+            toolObservationsText = "Download and load a model before using tools."
             return
         }
 
-        toolStatusText = "Running tool agent..."
         toolOutputText = ""
-        toolObservationsText = "Working..."
 
         let agent = Agent(title: "Time Agent", systemPrompt: "You are a helpful assistant that can use tools to answer time questions.")
             .register(
@@ -336,11 +333,9 @@ final class DemoAppModel {
                     "\(observation.name): \(observation.result)"
                 }.joined(separator: "\n")
             }
-            toolStatusText = "Tool run complete."
             NSLog("LocalAIKitDemoApp: runToolDemo completed")
         } catch {
             let message = error.localizedDescription
-            toolStatusText = message
             toolOutputText = message
             toolObservationsText = message
             statusText = message
@@ -387,30 +382,27 @@ final class DemoAppModel {
         }
     }
 
-    private var selectedAgent: LocalAIKitAgent {
-        client.makeAgent(blueprint: selectedBlueprint.blueprint)
+    private var currentlySelectedAgent: LocalAIKitAgent {
+        client.makeAgent(agentTemplate: selectedAgent.agentTemplate)
     }
 
-    private func applySelectedBlueprint() {
-        let blueprint = selectedBlueprint.blueprint
-        systemPrompt = blueprint.systemPrompt
-        inputText = blueprint.starterPrompt
-        statusText = "Selected \(blueprint.name)."
+    private func applySelectedAgent() {
+        let agentTemplate = selectedAgent.agentTemplate
+        systemPrompt = agentTemplate.systemPrompt
+        inputText = agentTemplate.starterPrompt
+        statusText = "Selected \(agentTemplate.name)."
     }
 
-    private func applyStructuredBlueprint() {
-        structuredPromptText = structuredBlueprint.blueprint.starterPrompt
-        structuredStatusText = "Selected \(structuredBlueprint.title) for structured output."
+    private func applyStructuredAgent() {
+        structuredPromptText = structuredAgent.agentTemplate.starterPrompt
+        structuredResultText = "Selected \(structuredAgent.title) for structured output."
     }
 
     private func handle(error: Error) {
         let message = error.localizedDescription
         statusText = message
-        structuredStatusText = message
         structuredResultText = message
         structuredOutputJSONText = ""
-        toolStatusText = message
-        toolOutputText = message
         toolObservationsText = message
         chatMessages.append(.init(role: .error, text: message))
     }

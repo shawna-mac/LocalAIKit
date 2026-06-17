@@ -90,7 +90,14 @@ struct ContentView: View {
                                 .foregroundStyle(.secondary)
                         } else {
                             ForEach(model.completedDownloads) { download in
-                                downloadRow(download)
+                                let isLoaded = model.loadedModel?.package == download.package
+                                Button {
+                                    model.loadCompletedDownload(download)
+                                } label: {
+                                    completedDownloadRow(download, isLoaded: isLoaded)
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(isLoaded)
                             }
                         }
                     }
@@ -107,6 +114,8 @@ struct ContentView: View {
             HStack {
                 Text(download.displayName)
                     .font(.headline)
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
                 Spacer()
                 Text("\(download.progressPercentage)%")
                     .foregroundStyle(.secondary)
@@ -128,11 +137,33 @@ struct ContentView: View {
     }
 
     @ViewBuilder
+    private func completedDownloadRow(_ download: LocalAIKitModelDownload, isLoaded: Bool) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(download.displayName)
+                    .font(.headline)
+                Text("Tap to load into memory.")
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            if isLoaded {
+                Label("Loaded", systemImage: "checkmark.circle.fill")
+                    .labelStyle(.titleAndIcon)
+                    .foregroundStyle(.green)
+            } else {
+                Text("Load")
+                    .foregroundStyle(.blue)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+
+    @ViewBuilder
     private func blueprintSection(_ model: DemoAppModel) -> some View {
         GroupBox("Agent Blueprint") {
                 VStack(alignment: .leading, spacing: 12) {
                     Picker("Blueprint", selection: $model.selectedBlueprint) {
-                        ForEach(LocalAIKitAgentBlueprintPreset.allCases) { blueprint in
+                        ForEach(LocalAIKitAgentPreset.allCases) { blueprint in
                             Text(blueprint.title).tag(blueprint)
                         }
                     }
@@ -183,7 +214,7 @@ struct ContentView: View {
         GroupBox("Structured Output") {
             VStack(alignment: .leading, spacing: 12) {
                 Picker("Structured Blueprint", selection: $model.structuredBlueprint) {
-                    ForEach(LocalAIKitAgentBlueprintPreset.allCases) { blueprint in
+                    ForEach(LocalAIKitAgentPreset.allCases) { blueprint in
                         Text(blueprint.title).tag(blueprint)
                     }
                 }
@@ -208,7 +239,7 @@ struct ContentView: View {
                     }
                     .disabled(!model.canChat)
 
-                    Text(model.structuredStatusText)
+                    Text(model.modelStatusText)
                         .foregroundStyle(.secondary)
                 }
 
@@ -244,7 +275,7 @@ struct ContentView: View {
                     }
                     .disabled(!model.canChat)
 
-                    Text(model.toolStatusText)
+                    Text(model.modelStatusText)
                         .foregroundStyle(.secondary)
                 }
 
@@ -351,7 +382,7 @@ struct ContentView: View {
 
             GroupBox("Structured Status") {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Status: \(model.structuredStatusText)")
+                    Text("Status: \(model.modelStatusText)")
                     Text("Result: \(model.structuredResultText)")
                     if !model.structuredOutputJSONText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                         Text("JSON:").font(.headline)
@@ -368,7 +399,7 @@ struct ContentView: View {
 
             GroupBox("Tool Status") {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Status: \(model.toolStatusText)")
+                    Text("Status: \(model.modelStatusText)")
                     Text("Output: \(model.toolOutputText)")
                     Text("Observations: \(model.toolObservationsText)")
                 }
