@@ -417,7 +417,7 @@ struct ContentView: View {
         }
     }
 
-    private func chatBubble(for message: DemoAppModel.ChatMessage) -> some View {
+    private func chatBubble(for message: ChatMessage) -> some View {
         HStack {
             if message.role == .assistant {
                 bubble(message, alignment: .leading, tint: .blue.opacity(0.12))
@@ -435,7 +435,7 @@ struct ContentView: View {
         }
     }
 
-    private func bubble(_ message: DemoAppModel.ChatMessage, alignment: Alignment, tint: Color) -> some View {
+    private func bubble(_ message: ChatMessage, alignment: Alignment, tint: Color) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(message.role.rawValue.capitalized)
                 .font(.caption.weight(.semibold))

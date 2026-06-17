@@ -14,6 +14,8 @@
 		0A0FD9562FD1E80E00E4013C /* LlamaBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FD9572FD1E80E00E4013C /* LlamaBridge.swift */; };
 		0A0FD9582FD1E80E00E4013C /* LocalAIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FD9592FD1E80E00E4013C /* LocalAIKit.swift */; };
 		0A0FD95A2FD1E80E00E4013C /* LocalAIKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FD95B2FD1E80E00E4013C /* LocalAIKitTests.swift */; };
+		0A0FD9602FD1E80E00E4013C /* Presets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FD9612FD1E80E00E4013C /* Presets.swift */; };
+		0A0FD9702FD1E80E00E4013C /* Tooling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FD9712FD1E80E00E4013C /* Tooling.swift */; };
 		0AE44E5A2FDDB7870032DB82 /* LocalAIKitDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E592FDDB7810032DB82 /* LocalAIKitDownloadManager.swift */; };
 		0AE44E5C2FDDB85C0032DB82 /* LocalAIKitDownloadStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E5B2FDDB8580032DB82 /* LocalAIKitDownloadStatus.swift */; };
 		0AE44E5E2FDDBDDB0032DB82 /* HuggingFaceRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E5D2FDDBDD40032DB82 /* HuggingFaceRepository.swift */; };
@@ -29,7 +31,6 @@
 		0AE44E792FE107140032DB82 /* LocalAIKitModelStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E782FE1070C0032DB82 /* LocalAIKitModelStatus.swift */; };
 		0AF60B792FCE84D70089AF48 /* LocalAIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */; };
 		1A3B4C5D6E7F8091A2B3C401 /* LocalAIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */; };
-		1A3B4C5D6E7F8091A2B3C411 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3B4C5D6E7F8091A2B3C412 /* main.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,8 @@
 		0A0FD9572FD1E80E00E4013C /* LlamaBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LlamaBridge.swift; sourceTree = "<group>"; };
 		0A0FD9592FD1E80E00E4013C /* LocalAIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKit.swift; sourceTree = "<group>"; };
 		0A0FD95B2FD1E80E00E4013C /* LocalAIKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitTests.swift; sourceTree = "<group>"; };
+		0A0FD9612FD1E80E00E4013C /* Presets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Presets.swift; sourceTree = "<group>"; };
+		0A0FD9712FD1E80E00E4013C /* Tooling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tooling.swift; sourceTree = "<group>"; };
 		0AE44E592FDDB7810032DB82 /* LocalAIKitDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitDownloadManager.swift; sourceTree = "<group>"; };
 		0AE44E5B2FDDB8580032DB82 /* LocalAIKitDownloadStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitDownloadStatus.swift; sourceTree = "<group>"; };
 		0AE44E5D2FDDBDD40032DB82 /* HuggingFaceRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuggingFaceRepository.swift; sourceTree = "<group>"; };
@@ -86,7 +89,6 @@
 		0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LocalAIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AF60B782FCE84D70089AF48 /* LocalAIKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LocalAIKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A3B4C5D6E7F8091A2B3C403 /* LocalAIKitCLI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LocalAIKitCLI; sourceTree = BUILT_PRODUCTS_DIR; };
-		1A3B4C5D6E7F8091A2B3C412 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,6 +158,8 @@
 			isa = PBXGroup;
 			children = (
 				0A0FD9512FD1E80E00E4013C /* Agents.swift */,
+				0A0FD9612FD1E80E00E4013C /* Presets.swift */,
+				0A0FD9712FD1E80E00E4013C /* Tooling.swift */,
 			);
 			path = Agents;
 			sourceTree = "<group>";
@@ -174,7 +178,6 @@
 			children = (
 				0AF60B6F2FCE84D70089AF48 /* LocalAIKit */,
 				0AF60B7C2FCE84D70089AF48 /* LocalAIKitTests */,
-				1A3B4C5D6E7F8091A2B3C410 /* LocalAIKitCLI */,
 				0A0FD9472FD1E7D300E4013C /* Frameworks */,
 				0AF60B6E2FCE84D70089AF48 /* Products */,
 			);
@@ -208,14 +211,6 @@
 				0A0FD95B2FD1E80E00E4013C /* LocalAIKitTests.swift */,
 			);
 			path = LocalAIKitTests;
-			sourceTree = "<group>";
-		};
-		1A3B4C5D6E7F8091A2B3C410 /* LocalAIKitCLI */ = {
-			isa = PBXGroup;
-			children = (
-				1A3B4C5D6E7F8091A2B3C412 /* main.swift */,
-			);
-			path = LocalAIKitCLI;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -355,6 +350,8 @@
 				0AE44E742FE106AA0032DB82 /* DownloadedModel.swift in Sources */,
 				0AE44E5A2FDDB7870032DB82 /* LocalAIKitDownloadManager.swift in Sources */,
 				0A0FD9502FD1E80E00E4013C /* Agents.swift in Sources */,
+				0A0FD9602FD1E80E00E4013C /* Presets.swift in Sources */,
+				0A0FD9702FD1E80E00E4013C /* Tooling.swift in Sources */,
 				0AE44E5C2FDDB85C0032DB82 /* LocalAIKitDownloadStatus.swift in Sources */,
 				0AE44E6A2FE061E50032DB82 /* LocalAIKitModelManager.swift in Sources */,
 				0AE44E642FDDBE520032DB82 /* LocalAIKitError.swift in Sources */,
@@ -384,7 +381,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A3B4C5D6E7F8091A2B3C411 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -491,6 +491,52 @@ final class LocalAIKitTests: XCTestCase {
         XCTAssertEqual(runResult.toolObservations.first?.result, "Time lookup for America/Chicago")
     }
 
+    func testAgentToolLoopSkipsMalformedToolEnvelopeWithoutCrashing() async throws {
+        struct TimeLookupInput: Codable, Equatable {
+            var timezone: String
+        }
+
+        let package = HuggingFaceModelPackage(
+            repository: HuggingFaceRepository(identifier: "org/model", revision: "main"),
+            assets: [HuggingFaceModelAsset(filename: "model.gguf")]
+        )
+
+        let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try Data("model".utf8).write(to: fileURL)
+        defer {
+            try? FileManager.default.removeItem(at: fileURL)
+        }
+
+        let downloadedModel = DownloadedModel(package: package, files: ["model.gguf": fileURL])
+        let agent = Agent(title: "Time Agent", systemPrompt: "Use tools when helpful.")
+            .register(
+                "get_current_time",
+                description: "Returns the current time for a timezone.",
+                inputExample: TimeLookupInput(timezone: "America/Chicago")
+            ) { input in
+                return "Time lookup for \(input.timezone)"
+            }
+
+        let malformedEnvelope = #"{"kind":"toolCall","tool":{"name":"get_current_time"}}"#
+        let finalEnvelope = #"{"kind":"final","response":"Done."}"#
+        let engine = SequenceInferenceEngine(results: [
+            malformedEnvelope,
+            finalEnvelope
+        ])
+        let client = LocalAIKitModelManager(inferenceEngine: engine)
+
+        let runResult = try await client.run(
+            agent,
+            prompt: "What time is it in Chicago?",
+            using: downloadedModel
+        )
+
+        XCTAssertEqual(runResult.finalResponse, "Unable to decode a tool call from the model output.")
+        XCTAssertEqual(runResult.toolObservations.count, 1)
+        XCTAssertEqual(runResult.toolObservations.first?.name, "tool_decode")
+        XCTAssertTrue(runResult.toolObservations.first?.result.contains("Unable to decode a tool call") == true)
+    }
+
     func testModelManagerUpdatesWhenGenerationCompletes() async throws {
         let package = HuggingFaceModelPackage(
             repository: HuggingFaceRepository(identifier: "org/model", revision: "main"),

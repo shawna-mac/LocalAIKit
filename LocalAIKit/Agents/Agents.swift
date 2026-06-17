@@ -210,93 +210,6 @@ public struct LocalAIKitAgentBlueprint: Sendable, Hashable, Identifiable {
     }
 }
 
-public enum LocalAIKitJSONValue: Sendable, Hashable, Codable {
-    case null
-    case bool(Bool)
-    case number(Double)
-    case string(String)
-    case array([LocalAIKitJSONValue])
-    case object([String: LocalAIKitJSONValue])
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-
-        if container.decodeNil() {
-            self = .null
-        } else if let bool = try? container.decode(Bool.self) {
-            self = .bool(bool)
-        } else if let int = try? container.decode(Int.self) {
-            self = .number(Double(int))
-        } else if let double = try? container.decode(Double.self) {
-            self = .number(double)
-        } else if let string = try? container.decode(String.self) {
-            self = .string(string)
-        } else if let array = try? container.decode([LocalAIKitJSONValue].self) {
-            self = .array(array)
-        } else if let object = try? container.decode([String: LocalAIKitJSONValue].self) {
-            self = .object(object)
-        } else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unsupported JSON value")
-        }
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-
-        switch self {
-        case .null:
-            try container.encodeNil()
-        case .bool(let bool):
-            try container.encode(bool)
-        case .number(let number):
-            try container.encode(number)
-        case .string(let string):
-            try container.encode(string)
-        case .array(let array):
-            try container.encode(array)
-        case .object(let object):
-            try container.encode(object)
-        }
-    }
-}
-
-public struct LocalAIKitAgentToolCall: Sendable, Hashable, Codable {
-    public var name: String
-    public var arguments: LocalAIKitJSONValue
-
-    public init(name: String, arguments: LocalAIKitJSONValue = .object([:])) {
-        self.name = name
-        self.arguments = arguments
-    }
-}
-
-public struct LocalAIKitAgentToolObservation: Sendable, Hashable, Codable {
-    public var name: String
-    public var result: String
-
-    public init(name: String, result: String) {
-        self.name = name
-        self.result = result
-    }
-}
-
-public struct LocalAIKitAgentToolEnvelope: Sendable, Hashable, Codable {
-    public enum Kind: String, Sendable, Codable {
-        case final
-        case toolCall
-    }
-
-    public var kind: Kind
-    public var response: String?
-    public var tool: LocalAIKitAgentToolCall?
-
-    public init(kind: Kind, response: String? = nil, tool: LocalAIKitAgentToolCall? = nil) {
-        self.kind = kind
-        self.response = response
-        self.tool = tool
-    }
-}
-
 public struct LocalAIKitAgentTool: Sendable, Hashable, Identifiable {
     public let id = UUID()
     public var name: String
@@ -465,7 +378,8 @@ public struct LocalAIKitAgent: Sendable, Hashable {
 
         if tools.count == 1,
            let singleTool = tools.first,
-           let arguments = Self.decodeJSONValue(from: candidateText) {
+           let arguments = Self.decodeJSONValue(from: candidateText),
+           !Self.looksLikeToolEnvelope(arguments) {
             return LocalAIKitAgentToolEnvelope(
                 kind: .toolCall,
                 tool: LocalAIKitAgentToolCall(name: singleTool.name, arguments: arguments)
@@ -512,8 +426,11 @@ public struct LocalAIKitAgent: Sendable, Hashable {
             guard let envelope = decodeToolCall(from: result) else {
                 let message = "Unable to decode a tool call from the model output."
                 observations.append(.init(name: "tool_decode", result: message))
-                currentHistory.append(.init(role: .system, text: message))
-                continue
+                currentHistory.append(.init(role: .system, text: "Tool decode failed: \(message)\n\nModel output:\n\(result)"))
+                return LocalAIKitAgentRunResult(
+                    finalResponse: message,
+                    toolObservations: observations
+                )
             }
 
             switch envelope.kind {
@@ -534,9 +451,19 @@ public struct LocalAIKitAgent: Sendable, Hashable {
                     continue
                 }
 
-                let result = try await tool.call(arguments: toolCall.arguments)
-                observations.append(.init(name: tool.name, result: result))
-                currentHistory.append(.init(role: .system, text: "Tool \(tool.name) result: \(result)"))
+                do {
+                    let result = try await tool.call(arguments: toolCall.arguments)
+                    observations.append(.init(name: tool.name, result: result))
+                    currentHistory.append(.init(role: .system, text: "Tool \(tool.name) result: \(result)"))
+                } catch {
+                    let message = error.localizedDescription
+                    observations.append(.init(name: tool.name, result: message))
+                    currentHistory.append(.init(role: .system, text: "Tool \(tool.name) failed: \(message)"))
+                    return LocalAIKitAgentRunResult(
+                        finalResponse: "Tool \(tool.name) failed: \(message)",
+                        toolObservations: observations
+                    )
+                }
             }
         }
 
@@ -568,8 +495,9 @@ public struct LocalAIKitAgent: Sendable, Hashable {
         Tool calling instructions:
         - If you need to use a tool, return JSON with kind = "toolCall" and include the tool name and arguments.
         - If you are finished, return JSON with kind = "final" and include a response.
-        - If there is only one tool available, you may also return only that tool's arguments as plain JSON.
-        - Do not include markdown fences or commentary.
+        - If there is only one tool available, return only that tool's arguments as plain JSON.
+        - Return JSON only. Do not include markdown fences, explanations, code blocks, or extra commentary.
+        - Do not return any text outside the JSON object.
 
         Available tools:
         \(toolList)
@@ -600,6 +528,14 @@ public struct LocalAIKitAgent: Sendable, Hashable {
         }
 
         return decoded
+    }
+
+    private static func looksLikeToolEnvelope(_ value: LocalAIKitJSONValue) -> Bool {
+        guard case .object(let object) = value else {
+            return false
+        }
+
+        return object["kind"] != nil || object["tool"] != nil || object["response"] != nil
     }
 
     private static func extractJSONObject(from text: String) -> String? {
@@ -690,98 +626,6 @@ public struct LocalAIKitAgent: Sendable, Hashable {
 }
 
 public typealias Agent = LocalAIKitAgent
-
-public enum LocalAIKitAgentBlueprintPreset: String, CaseIterable, Identifiable, Sendable, Hashable {
-    case generalAssistant
-    case structuredExtractor
-    case conciseSummarizer
-    case codingAssistant
-
-    public var id: String {
-        rawValue
-    }
-
-    public var title: String {
-        switch self {
-        case .generalAssistant:
-            return "General Assistant"
-        case .structuredExtractor:
-            return "Structured Extractor"
-        case .conciseSummarizer:
-            return "Concise Summarizer"
-        case .codingAssistant:
-            return "Coding Assistant"
-        }
-    }
-
-    public var summary: String {
-        switch self {
-        case .generalAssistant:
-            return "A friendly conversational agent for general chat and helpful answers."
-        case .structuredExtractor:
-            return "A blueprint for strict JSON extraction into typed Swift models."
-        case .conciseSummarizer:
-            return "A short-form agent that turns longer text into compact summaries."
-        case .codingAssistant:
-            return "A developer-focused agent that explains and writes code carefully."
-        }
-    }
-
-    public var blueprint: LocalAIKitAgentBlueprint {
-        switch self {
-        case .generalAssistant:
-            return LocalAIKitAgentBlueprint(
-                id: rawValue,
-                name: title,
-                summary: summary,
-                systemPrompt: "You are a helpful assistant that answers clearly, directly, and accurately.",
-                starterPrompt: "Hello! How can you help me today?",
-                outputMode: .chat,
-                sampling: .init(maxTokens: 256, temperature: 0.7, topP: 0.95, topK: 40, repeatPenalty: 1.1)
-            )
-        case .structuredExtractor:
-            return LocalAIKitAgentBlueprint(
-                id: rawValue,
-                name: title,
-                summary: summary,
-                systemPrompt: "You extract information faithfully and return only valid JSON.",
-                starterPrompt: "Extract a contact record with fields name, title, and email from this text: My name is Taylor Chen, I work as a product engineer, and my email is taylor@localaikit.dev.",
-                outputMode: .structuredJSON,
-                sampling: .init(maxTokens: 180, temperature: 0, topP: 1, topK: 1, repeatPenalty: 1),
-                structuredGuide: .init(
-                    instructions: "Return only valid JSON. Do not include markdown fences, commentary, or extra text.",
-                    exampleJSON: """
-                    {
-                      "name": "Taylor Chen",
-                      "title": "product engineer",
-                      "email": "taylor@localaikit.dev"
-                    }
-                    """
-                )
-            )
-        case .conciseSummarizer:
-            return LocalAIKitAgentBlueprint(
-                id: rawValue,
-                name: title,
-                summary: summary,
-                systemPrompt: "You summarize text in a concise, high-signal way.",
-                starterPrompt: "Summarize the following text in three bullet points.",
-                outputMode: .chat,
-                sampling: .init(maxTokens: 160, temperature: 0.4, topP: 0.9, topK: 25, repeatPenalty: 1.0)
-            )
-        case .codingAssistant:
-            return LocalAIKitAgentBlueprint(
-                id: rawValue,
-                name: title,
-                summary: summary,
-                systemPrompt: "You are a careful coding assistant. Prefer correctness, clarity, and practical code examples.",
-                starterPrompt: "Explain this Swift snippet and suggest improvements.",
-                outputMode: .chat,
-                sampling: .init(maxTokens: 320, temperature: 0.2, topP: 0.9, topK: 30, repeatPenalty: 1.05)
-            )
-        }
-    }
-}
 
 public extension LocalAIKitModelManager {
     func makeAgent(blueprint: LocalAIKitAgentBlueprint) -> LocalAIKitAgent {
