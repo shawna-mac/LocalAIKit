@@ -1,2 +1,0 @@
-llama.xcframework filter=lfs diff=lfs merge=lfs -text
-build-apple/llama.xcframework/** filter=lfs diff=lfs merge=lfs -text

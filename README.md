@@ -288,3 +288,9 @@ This repository also includes a demo app in `LocalAIAppKitDemo/` that shows:
 - Online deep search
 - RAG 
 - Planning
+- Replanning after tool results
+- Self check before final answer
+- Task Queue 
+- Multi - tool orchestration 
+- Retry 
+- Task interrupt 
