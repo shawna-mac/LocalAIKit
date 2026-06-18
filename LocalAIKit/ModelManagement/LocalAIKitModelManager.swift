@@ -29,7 +29,11 @@ public enum LocalAIKitInferenceEngineFactory {
     ///
     /// - Returns: The default `LocalAIKitInferenceEngine` implementation.
     public static func makeDefault() -> any LocalAIKitInferenceEngine {
+        #if canImport(llama)
         return LlamaCppInferenceEngine()
+        #else
+        return UnsupportedLocalAIKitInferenceEngine()
+        #endif
     }
 }
 

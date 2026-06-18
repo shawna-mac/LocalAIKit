@@ -16,13 +16,8 @@ let package = Package(
         )
     ],
     targets: [
-        .binaryTarget(
-            name: "llama",
-            path: "build-apple/llama.xcframework"
-        ),
         .target(
             name: "LocalAIKit",
-            dependencies: ["llama"],
             path: "LocalAIKit"
         ),
         .testTarget(

@@ -2,7 +2,7 @@
 
 LocalAIKit is a Swift framework for preparing local LLM assets for use with `llama.cpp`.
 
-If you add the native `llama` binary target from `Package.swift` to your app or Xcode project, LocalAIKit uses the native `LlamaCppInferenceEngine` automatically. Otherwise it falls back to a stub engine that reports `inferenceEngineNotConfigured`.
+If the native `llama` binary is available, LocalAIKit uses the native `LlamaCppInferenceEngine` automatically. Otherwise it falls back to a stub engine that reports `inferenceEngineNotConfigured`.
 
 ## Overview
 

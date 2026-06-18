@@ -6,8 +6,12 @@
 //
 
 import Foundation
-import llama
 
+#if canImport(llama)
+import llama
+#endif
+
+#if canImport(llama)
 public struct LlamaCppInferenceEngine: LocalAIKitInferenceEngine {
     public init() {}
 
@@ -262,3 +266,4 @@ public struct LlamaCppInferenceEngine: LocalAIKitInferenceEngine {
             .max(by: { $0.count < $1.count })
     }
 }
+#endif
