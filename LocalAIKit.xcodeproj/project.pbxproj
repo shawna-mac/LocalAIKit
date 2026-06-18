@@ -29,6 +29,9 @@
 		0AE44E6F2FE06E4D0032DB82 /* LocalAIKitInferenceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E6E2FE06E4C0032DB82 /* LocalAIKitInferenceError.swift */; };
 		0AE44E742FE106AA0032DB82 /* DownloadedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E732FE106A40032DB82 /* DownloadedModel.swift */; };
 		0AE44E792FE107140032DB82 /* LocalAIKitModelStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E782FE1070C0032DB82 /* LocalAIKitModelStatus.swift */; };
+		0AE44E862FE3928F0032DB82 /* LocalAIKitAgentTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E852FE3928E0032DB82 /* LocalAIKitAgentTool.swift */; };
+		0AE44E882FE392D30032DB82 /* LocalAIKitAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E872FE392D20032DB82 /* LocalAIKitAgent.swift */; };
+		0AE44E8A2FE393550032DB82 /* LocalAIKitAgentTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE44E892FE393540032DB82 /* LocalAIKitAgentTemplate.swift */; };
 		0AF60B792FCE84D70089AF48 /* LocalAIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */; };
 		1A3B4C5D6E7F8091A2B3C401 /* LocalAIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */; };
 /* End PBXBuildFile section */
@@ -86,6 +89,9 @@
 		0AE44E6E2FE06E4C0032DB82 /* LocalAIKitInferenceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitInferenceError.swift; sourceTree = "<group>"; };
 		0AE44E732FE106A40032DB82 /* DownloadedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadedModel.swift; sourceTree = "<group>"; };
 		0AE44E782FE1070C0032DB82 /* LocalAIKitModelStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitModelStatus.swift; sourceTree = "<group>"; };
+		0AE44E852FE3928E0032DB82 /* LocalAIKitAgentTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitAgentTool.swift; sourceTree = "<group>"; };
+		0AE44E872FE392D20032DB82 /* LocalAIKitAgent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitAgent.swift; sourceTree = "<group>"; };
+		0AE44E892FE393540032DB82 /* LocalAIKitAgentTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAIKitAgentTemplate.swift; sourceTree = "<group>"; };
 		0AF60B6D2FCE84D70089AF48 /* LocalAIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LocalAIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AF60B782FCE84D70089AF48 /* LocalAIKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LocalAIKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A3B4C5D6E7F8091A2B3C403 /* LocalAIKitCLI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LocalAIKitCLI; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -157,6 +163,9 @@
 		0AE44E722FE105000032DB82 /* Agents */ = {
 			isa = PBXGroup;
 			children = (
+				0AE44E892FE393540032DB82 /* LocalAIKitAgentTemplate.swift */,
+				0AE44E872FE392D20032DB82 /* LocalAIKitAgent.swift */,
+				0AE44E852FE3928E0032DB82 /* LocalAIKitAgentTool.swift */,
 				0A0FD9512FD1E80E00E4013C /* Agents.swift */,
 				0A0FD9612FD1E80E00E4013C /* Presets.swift */,
 				0A0FD9712FD1E80E00E4013C /* Tooling.swift */,
@@ -356,6 +365,7 @@
 				0AE44E6A2FE061E50032DB82 /* LocalAIKitModelManager.swift in Sources */,
 				0AE44E642FDDBE520032DB82 /* LocalAIKitError.swift in Sources */,
 				0AE44E6D2FE0693E0032DB82 /* LocalAIKitInferenceRequest.swift in Sources */,
+				0AE44E882FE392D30032DB82 /* LocalAIKitAgent.swift in Sources */,
 				0A0FD9522FD1E80E00E4013C /* HuggingFaceModelStore.swift in Sources */,
 				0AE44E622FDDBE040032DB82 /* HuggingFaceModelPackage.swift in Sources */,
 				0A0FD9562FD1E80E00E4013C /* LlamaBridge.swift in Sources */,
@@ -364,7 +374,9 @@
 				0AE44E602FDDBDF40032DB82 /* HuggingFaceModelAsset.swift in Sources */,
 				0A0FD9582FD1E80E00E4013C /* LocalAIKit.swift in Sources */,
 				0AE44E5E2FDDBDDB0032DB82 /* HuggingFaceRepository.swift in Sources */,
+				0AE44E8A2FE393550032DB82 /* LocalAIKitAgentTemplate.swift in Sources */,
 				0AE44E792FE107140032DB82 /* LocalAIKitModelStatus.swift in Sources */,
+				0AE44E862FE3928F0032DB82 /* LocalAIKitAgentTool.swift in Sources */,
 				0AE44E6F2FE06E4D0032DB82 /* LocalAIKitInferenceError.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

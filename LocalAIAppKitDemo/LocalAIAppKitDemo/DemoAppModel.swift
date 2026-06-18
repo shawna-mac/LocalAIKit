@@ -213,8 +213,8 @@ final class DemoAppModel {
                 history: conversationTurns,
                 overrideSystemPrompt: systemPrompt,
                 onPartialText: { [weak self] partialText in
-                    Task { @MainActor [weak self, assistantMessageID] in
-                        guard let self else { return }
+                    guard let self else { return }
+                    Task { @MainActor [assistantMessageID, self] in
                         self.updateAssistantMessage(id: assistantMessageID, text: partialText.isEmpty ? "Generating response..." : partialText)
                     }
                 }
@@ -301,7 +301,7 @@ final class DemoAppModel {
 
         toolOutputText = ""
 
-        let agent = Agent(title: "Time Agent", systemPrompt: "You are a helpful assistant that can use tools to answer time questions.")
+        let agent = LocalAIKitAgent(title: "Time Agent", systemPrompt: "You are a helpful assistant that can use tools to answer time questions.")
             .register(
                 "get_current_time",
                 description: "Returns the current time for a requested timezone.",

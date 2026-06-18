@@ -496,3 +496,50 @@ public extension LocalAIKitModelManager {
         return nil
     }
 }
+
+public extension LocalAIKitModelManager {
+    func makeAgent(agentTemplate: LocalAIKitAgentTemplate) -> LocalAIKitAgent {
+        LocalAIKitAgent(agentTemplate: agentTemplate)
+    }
+
+    func generateStructured<T: Decodable>(
+        _ agent: LocalAIKitAgent,
+        prompt: String,
+        as type: T.Type = T.self,
+        using loadedModel: LoadedModelContents,
+        history: [LocalAIKitConversationTurn] = [],
+        overrideSystemPrompt: String? = nil,
+        onPartialText: (@Sendable (String) -> Void)? = nil
+    ) async throws -> T {
+        let request = agent.makeStructuredRequest(
+            prompt: prompt,
+            history: history,
+            overrideSystemPrompt: overrideSystemPrompt
+        )
+
+        return try await generateStructured(
+            request,
+            as: type,
+            using: loadedModel,
+            onPartialText: onPartialText
+        )
+    }
+
+    func run(
+        _ agent: LocalAIKitAgent,
+        prompt: String,
+        using loadedModel: LoadedModelContents,
+        history: [LocalAIKitConversationTurn] = [],
+        overrideSystemPrompt: String? = nil,
+        onPartialText: (@Sendable (String) -> Void)? = nil
+    ) async throws -> LocalAIKitAgentRunResult {
+        try await agent.run(
+            prompt: prompt,
+            using: self,
+            loadedModel: loadedModel,
+            history: history,
+            overrideSystemPrompt: overrideSystemPrompt,
+            onPartialText: onPartialText
+        )
+    }
+}

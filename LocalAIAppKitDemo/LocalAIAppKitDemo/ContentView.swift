@@ -17,7 +17,6 @@ struct ContentView: View {
                     agentSection(model)
                     structuredSection(model)
                     toolSection(model)
-                    chatSection(model)
                 }
             }
             .padding(24)
@@ -203,6 +202,18 @@ struct ContentView: View {
                     Text(model.canChat ? "Runs the selected agent preset with its starter prompt." : "Download and load a model first.")
                         .foregroundStyle(.secondary)
                 }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Latest Reply")
+                        .font(.headline)
+
+                    ScrollView {
+                        Text(model.latestAssistantReplyText)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .textSelection(.enabled)
+                    }
+                    .frame(minHeight: 180)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -292,55 +303,6 @@ struct ContentView: View {
                     Text(model.toolObservationsText)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .textSelection(.enabled)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-
-    @ViewBuilder
-    private func chatSection(_ model: DemoAppModel) -> some View {
-        GroupBox("Chat") {
-            VStack(alignment: .leading, spacing: 12) {
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 10) {
-                            ForEach(model.chatMessages) { message in
-                                chatBubble(for: message)
-                                    .id(message.id)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.vertical, 4)
-                    }
-                    .frame(minHeight: 280)
-                    .task(id: model.chatMessages.count) {
-                        guard let lastID = model.chatMessages.last?.id else { return }
-                        withAnimation(.easeOut(duration: 0.2)) {
-                            proxy.scrollTo(lastID, anchor: .bottom)
-                        }
-                    }
-                }
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Message")
-                        .font(.headline)
-
-                    TextField("Ask the model something...", text: $model.inputText, axis: .vertical)
-                        .textFieldStyle(.roundedBorder)
-                        .disabled(!model.canChat)
-
-                    HStack {
-                        Button(model.modelStatus == .generating ? "Thinking..." : "Send Message") {
-                            Task {
-                                await model.sendMessage()
-                            }
-                        }
-                        .disabled(!model.canChat)
-
-                        Text(model.canChat ? "Chat is ready." : "Download a model first.")
-                            .foregroundStyle(.secondary)
-                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
